@@ -7,7 +7,7 @@
         <RouterLink to="/">
           <img src="../assets/logo.png" alt="logo" class="w-6 h-6" />
         </RouterLink>
-        <p class="text-sm ml-4">
+        <p class="text-xs ml-4">
           名古屋市
           <br />
           スポーツ•レクリエーション情報システム

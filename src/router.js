@@ -32,5 +32,9 @@ export const router = createRouter({
       path: "/login",
       component: () => import("./pages/Login.vue"),
     },
+    {
+      path: "/signup",
+      component: () => import("./pages/Signup.vue"),
+    },
   ],
 });

@@ -24,7 +24,9 @@ export default {
 body {
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 }
-
+* {
+  /* outline: 1px solid #ddd; */
+}
 .app-container {
   max-width: 1024px;
   margin: 0 auto;
