@@ -1,0 +1,1 @@
+<template>hero page</template>
