@@ -25,7 +25,7 @@
 
 <style scoped>
 section {
-  background-image: url("../assets/hero.jpg");
+  background-image: url("/hero.jpg");
   height: 20rem;
 
   background-position: center;

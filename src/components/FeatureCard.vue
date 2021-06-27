@@ -15,7 +15,7 @@ export default {
   },
   computed: {
     imgPath() {
-      return "/src/assets/" + this.img + ".png";
+      return "/" + this.img + ".png";
     },
   },
 };

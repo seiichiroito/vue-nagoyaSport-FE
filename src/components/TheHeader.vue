@@ -5,7 +5,7 @@
     >
       <div class="flex items-center">
         <RouterLink to="/">
-          <img src="../assets/logo.png" alt="logo" class="w-6 h-6" />
+          <img src="/logo.png" alt="logo" class="w-6 h-6" />
         </RouterLink>
         <p class="text-xs ml-4">
           名古屋市
