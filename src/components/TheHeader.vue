@@ -4,7 +4,7 @@
       class="app-container py-4 flex justify-between text-light items-center"
     >
       <div class="flex items-center">
-        <RouterLink to="/">
+        <RouterLink to="/" @click="$emit('closeNav')">
           <img src="/logo.png" alt="logo" class="w-6 h-6" />
         </RouterLink>
         <p class="text-xs ml-4">
@@ -14,7 +14,11 @@
         </p>
       </div>
       <div>
-        <font-awesome-icon icon="bars" class="text-2xl md:hidden" />
+        <font-awesome-icon
+          icon="bars"
+          class="text-2xl md:hidden"
+          @click="$emit('toggleNav')"
+        />
         <ul class="hidden md:flex text-base space-x-6">
           <li>
             <RouterLink to="/" class="hover:text-darkBlue"> ホーム </RouterLink>

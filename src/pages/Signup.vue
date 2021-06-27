@@ -13,7 +13,12 @@
             placeholder="確認用パスワード"
             class="mb-12"
           />
-          <Button type="submit">アカウントを登録</Button>
+          <button
+            class="bg-blue text-light py-2 px-8 rounded-md hover:bg-darkBlue"
+            type="submit"
+          >
+            アカウントを登録
+          </button>
         </form>
         <div class="text-center mt-4">
           <p class="text-gray mr-4">アカウントをすでにお持ちですか？</p>
