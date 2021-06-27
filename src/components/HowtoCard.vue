@@ -29,7 +29,7 @@ export default {
   },
   computed: {
     imgPath() {
-      return "src/assets/" + this.img + ".svg";
+      return "/src/assets/" + this.img + ".svg";
     },
   },
 };
