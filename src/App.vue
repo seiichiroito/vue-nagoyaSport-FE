@@ -1,7 +1,11 @@
 <template>
-  <TheHeader />
-  <RouterView></RouterView>
-  <TheFooter />
+  <div class="flex flex-col min-h-screen">
+    <TheHeader />
+    <div class="flex-grow bg-light">
+      <RouterView></RouterView>
+    </div>
+    <TheFooter />
+  </div>
 </template>
 
 <script>
@@ -21,6 +25,10 @@ export default {
 </script>
 
 <style>
+:root {
+  --blue: #118ab2;
+  --darkBlue: #073b4c;
+}
 body {
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 }
