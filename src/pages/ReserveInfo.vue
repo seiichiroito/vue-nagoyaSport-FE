@@ -2,12 +2,14 @@
   <div class="bg-light py-8">
     <div class="app-container" v-if="result">
       <Heading>{{ result.name }}</Heading>
+      <el-button>Hello</el-button>
     </div>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+
 export default {
   props: {
     facilityId: String,
