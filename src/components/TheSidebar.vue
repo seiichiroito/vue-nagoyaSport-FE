@@ -9,8 +9,8 @@
           >
         </div>
         <ul class="grid divide-y">
-          <li v-for="info in information" :key="info" class="py-4">
-            <RouterLink to="/" class="flex">
+          <li v-for="info in information" :key="info">
+            <RouterLink to="/" class="flex py-4">
               <font-awesome-icon
                 icon="exclamation-circle"
                 class="text-sm mt-1"

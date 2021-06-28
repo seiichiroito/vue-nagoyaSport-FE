@@ -29,6 +29,11 @@ export const router = createRouter({
       component: () => import("./pages/ReserveDate.vue"),
     },
     {
+      path: "/reserve/:facilityId",
+      component: () => import("./pages/ReserveInfo.vue"),
+      props: true,
+    },
+    {
       path: "/login",
       component: () => import("./pages/Login.vue"),
     },
