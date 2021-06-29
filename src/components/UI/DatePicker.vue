@@ -5,6 +5,7 @@
       type="date"
       :placeholder="placeholder"
       @change="updateValue"
+      @focus="onFocus"
     >
     </el-date-picker>
   </div>
@@ -23,6 +24,9 @@ export default {
   methods: {
     updateValue() {
       this.$emit("setDate", this.value);
+    },
+    onFocus() {
+      document.activeElement.blur();
     },
   },
 };
