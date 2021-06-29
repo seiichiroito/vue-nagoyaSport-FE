@@ -1,11 +1,15 @@
 <template>
   <div class="flex flex-col min-h-screen">
     <TheHeader @toggleNav="toggleNav" @closeNav="closeNav" />
-    <transition name="navbar">
+    <el-collapse-transition>
       <TheNavbar v-if="navIsOpen" @closeNav="closeNav" />
-    </transition>
+    </el-collapse-transition>
     <div class="flex-grow bg-light">
-      <RouterView></RouterView>
+      <RouterView v-slot="{ Component }">
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
+      </RouterView>
     </div>
     <TheFooter />
   </div>
@@ -46,6 +50,8 @@ export default {
 :root {
   --blue: #118ab2;
   --darkBlue: #073b4c;
+  --light: "#f3f3f3";
+  --lightBlue: "#dce8ed";
 }
 body {
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
@@ -57,24 +63,5 @@ body {
   max-width: 1024px;
   margin: 0 auto;
   padding: 0 1rem;
-}
-
-.navbar-enter-from {
-  height: 0;
-}
-.navbar-enter-to {
-  height: 14rem;
-}
-.navbar-enter-active {
-  transition: all 0.3s ease-in;
-}
-.navbar-leave-from {
-  height: 14rem;
-}
-.navbar-leave-to {
-  height: 0;
-}
-.navbar-leave-active {
-  transition: all 0.3s ease-in;
 }
 </style>

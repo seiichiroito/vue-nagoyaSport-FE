@@ -14,6 +14,15 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 library.add(fas, fab);
 app.component("font-awesome-icon", FontAwesomeIcon);
 
+// Element Plus
+import ElementPlus from "element-plus";
+import "element-plus/lib/theme-chalk/index.css";
+import "element-plus/packages/theme-chalk/src/base.scss";
+import locale from "element-plus/lib/locale/lang/ja";
+import "dayjs/locale/ja";
+
+app.use(ElementPlus, { locale });
+
 // Router
 import { router } from "./router";
 
@@ -22,6 +31,7 @@ import Button from "./components/UI/Button.vue";
 import Heading from "./components/UI/Heading.vue";
 import PageTitle from "./components/UI/PageTitle.vue";
 import Input from "./components/UI/Input.vue";
+import dayjs from "dayjs";
 
 app.component("Button", Button);
 app.component("Heading", Heading);

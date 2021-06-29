@@ -34,6 +34,15 @@ export const router = createRouter({
       props: true,
     },
     {
+      path: "/reserve/:facilityId/confirm",
+      component: () => import("./pages/ReserveConfirmation.vue"),
+      props: true,
+    },
+    {
+      path: "/reserve/completed",
+      component: () => import("./pages/ReserveCompleted.vue"),
+    },
+    {
       path: "/login",
       component: () => import("./pages/Login.vue"),
     },
@@ -42,4 +51,7 @@ export const router = createRouter({
       component: () => import("./pages/Signup.vue"),
     },
   ],
+  scrollBehavior(to, from, savedPosition) {
+    return { top: 0 };
+  },
 });

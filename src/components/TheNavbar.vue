@@ -32,10 +32,6 @@ export default {
 </script>
 
 <style>
-nav {
-  height: 14rem;
-}
-
 @media screen and (min-width: 768px) {
   nav {
     display: none;
