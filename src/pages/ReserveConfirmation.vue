@@ -7,10 +7,11 @@
         <p>施設名: 瑞穂グラウンド</p>
         <p>日時: 6月8日　9:00 〜 12:00</p>
         <p>利用料金: 1500円</p>
-        <p>予約者名*: セイ</p>
+        <p>利用者ID*: 2308sdfkj</p>
       </div>
       <p class="text-sm mt-4 px-2">
-        * 予約者名は電話でやり取りする場合に予約者の確認として使われます。
+        *
+        利用者IDは電話でやり取りする場合に予約者の確認として使われる場合があります。
       </p>
       <div class="mt-8 flex justify-end">
         <Button to="/reserve/completed">予約する</Button>

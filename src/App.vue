@@ -43,6 +43,9 @@ export default {
     TheNavbar,
     TheFooter,
   },
+  created() {
+    this.$store.dispatch("autoLogin");
+  },
 };
 </script>
 

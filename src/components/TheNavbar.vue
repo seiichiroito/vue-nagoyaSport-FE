@@ -14,8 +14,11 @@
           施設から予約
         </NavLink>
       </li>
-      <li>
+      <li v-if="!isLoggedIn">
         <NavLink to="/login" @click="$emit('closeNav')"> ログイン </NavLink>
+      </li>
+      <li v-if="isLoggedIn">
+        <NavLink to="/setting" @click="$emit('closeNav')">設定</NavLink>
       </li>
     </ul>
   </nav>
@@ -27,6 +30,11 @@ import NavLink from "./NavLink.vue";
 export default {
   components: {
     NavLink,
+  },
+  computed: {
+    isLoggedIn() {
+      return this.$store.getters.isLoggedIn;
+    },
   },
 };
 </script>

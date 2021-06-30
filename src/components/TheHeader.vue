@@ -33,7 +33,7 @@
               施設から予約
             </RouterLink>
           </li>
-          <li>
+          <li v-if="!isLoggedIn">
             <RouterLink to="/login" class="hover:text-darkBlue">
               ログイン
             </RouterLink>
@@ -55,6 +55,11 @@ export default {
     return {
       navIsHidden: true,
     };
+  },
+  computed: {
+    isLoggedIn() {
+      return this.$store.getters.isLoggedIn;
+    },
   },
 };
 </script>

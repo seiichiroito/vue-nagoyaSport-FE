@@ -4,14 +4,28 @@
       <PageTitle>アカウント登録</PageTitle>
       <div class="mt-8 p-6 border border-blue shadow-lg max-w-sm mx-auto">
         <form class="grid" @submit.prevent="submitForm">
-          <Input id="name" type="text" placeholder="名前" />
-          <Input id="email" type="email" placeholder="Eメール" />
-          <Input id="password" type="password" placeholder="パスワード" />
+          <Input
+            id="email"
+            type="email"
+            placeholder="Eメール"
+            autofocus
+            :value="formState.email"
+            @input="onInput"
+          />
+          <Input
+            id="password"
+            type="password"
+            placeholder="パスワード"
+            :value="formState.password"
+            @input="onInput"
+          />
           <Input
             id="passwordConfirmation"
             type="password"
             placeholder="確認用パスワード"
             class="mb-12"
+            :value="formState.passwordConfirmation"
+            @input="onInput"
           />
           <button
             class="bg-blue text-light py-2 px-8 rounded-md hover:bg-darkBlue"
@@ -33,9 +47,29 @@
 
 <script>
 export default {
+  data() {
+    return {
+      formState: {
+        email: "",
+        password: "",
+        passwordConfirmation: "",
+      },
+    };
+  },
   methods: {
     submitForm() {
-      console.log("Signup");
+      try {
+        this.$store.dispatch("signup", {
+          email: this.formState.email,
+          password: this.formState.password,
+        });
+      } catch (err) {}
+    },
+    onInput(event) {
+      this.formState = {
+        ...this.formState,
+        [event.target.id]: event.target.value,
+      };
     },
   },
 };

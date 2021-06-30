@@ -25,19 +25,21 @@ app.use(ElementPlus, { locale });
 
 // Router
 import { router } from "./router";
+app.use(router);
+
+// Vuex
+import store from "./store/index";
+app.use(store);
 
 // Components
 import Button from "./components/UI/Button.vue";
 import Heading from "./components/UI/Heading.vue";
 import PageTitle from "./components/UI/PageTitle.vue";
 import Input from "./components/UI/Input.vue";
-import dayjs from "dayjs";
 
 app.component("Button", Button);
 app.component("Heading", Heading);
 app.component("PageTitle", PageTitle);
 app.component("Input", Input);
-
-app.use(router);
 
 app.mount("#app");

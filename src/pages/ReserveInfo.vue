@@ -89,7 +89,6 @@ export default {
       }
     },
     handleBlur(el) {
-      console.log(el);
       el.target.style.backgroundColor = "#118AB2";
     },
     showAvailable() {
