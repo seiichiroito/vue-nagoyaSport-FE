@@ -15,15 +15,11 @@
 export default {
   props: {
     placeholder: String,
-  },
-  data() {
-    return {
-      value: "",
-    };
+    value: Date,
   },
   methods: {
     updateValue() {
-      this.$emit("setDate", this.value);
+      this.$emit("change", this.value);
     },
     onFocus() {
       document.activeElement.blur();

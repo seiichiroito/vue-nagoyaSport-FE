@@ -23,34 +23,12 @@
           </option>
         </select>
 
-        <label for="facility">施設</label>
-        <select
-          id="facility"
-          v-model="selected.facility"
-          @change="onChange($event)"
-        >
-          <option value="">全ての施設</option>
-          <option
-            v-for="facility in facilities"
-            :key="facility"
-            :value="facility"
-          >
-            {{ facility }}
-          </option>
-        </select>
-
         <label for="sport">スポーツ施設</label>
         <select id="sport" v-model="selected.sport" @change="onChange($event)">
           <option value="">全てのスポーツ施設</option>
           <option v-for="sport in sports" :key="sport" :value="sport">
             {{ sport }}
           </option>
-        </select>
-
-        <label for="order">順序</label>
-        <select id="order" v-model="selected.order" @change="onChange($event)">
-          <option value="asc">昇順</option>
-          <option value="desc">降順</option>
         </select>
       </div>
 
@@ -112,7 +90,6 @@ export default {
         "天白区",
         "県内",
       ],
-      facilities: ["千代田橋緑地テニスコート", "千種公園テニスコート"],
       sports: [
         "テニスコート",
         "野球場",
@@ -130,8 +107,6 @@ export default {
       selected: {
         sport: "",
         area: "",
-        facility: "",
-        order: "asc",
       },
       searchedName: "",
       results: [],
@@ -145,12 +120,6 @@ export default {
       if (this.selected.area !== "") {
         this.filteredResult = this.filteredResult.filter(
           (result) => result.area === this.selected.area
-        );
-      }
-
-      if (this.selected.facility !== "") {
-        this.filteredResult = this.filteredResult.filter(
-          (result) => result.name === this.selected.facility
         );
       }
 
@@ -170,8 +139,6 @@ export default {
       this.selected = {
         sport: "",
         area: "",
-        facility: "",
-        order: "asc",
       };
       this.filteredResult = this.results;
     },

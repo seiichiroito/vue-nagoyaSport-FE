@@ -1,9 +1,18 @@
 <template>
   <div class="bg-light py-8">
     <div class="app-container">
-      <PageTitle>施設から予約</PageTitle>
+      <PageTitle>日時から予約</PageTitle>
       <div
-        class="mt-8 grid grid-cols-2 md:grid-cols-4 border p-4 gap-8 rounded-md"
+        class="
+          mt-8
+          grid grid-cols-2
+          md:grid-cols-4
+          border
+          p-4
+          gap-8
+          rounded-md
+          items-center
+        "
       >
         <div class="col-span-full flex justify-between">
           <p>詳細検索</p>
@@ -14,51 +23,16 @@
             リセット
           </button>
         </div>
-        <div
-          class="col-span-full flex flex-col sm:flex-row gap-8 justify-between"
-        >
-          <label for="date" class="col-span-1">日時範囲</label>
-          <div
-            class="
-              picker-container
-              grid grid-cols-2
-              items-end
-              gap-4
-              justify-items-end
-            "
-          >
-            <DatePicker
-              id="date"
-              class="col-span-1"
-              @setDate="setStartDate"
-              placeholder="開始日"
-            />
-            <p>から</p>
-            <DatePicker
-              id="date"
-              class="col-span-1"
-              @setDate="setEndDate"
-              placeholder="最終日"
-            />
-            <p>まで</p>
-          </div>
-        </div>
 
-        <label for="facility">施設</label>
-        <select
-          id="facility"
-          v-model="selected.facility"
-          @change="onChange($event)"
-        >
-          <option value="">全ての施設</option>
-          <option
-            v-for="facility in facilities"
-            :key="facility"
-            :value="facility"
-          >
-            {{ facility }}
-          </option>
-        </select>
+        <label for="date">日時</label>
+
+        <DatePicker
+          id="date"
+          class="col-span-1"
+          @change="setDate"
+          placeholder="検索日"
+          :value="selected.date"
+        />
 
         <label for="sport">スポーツ施設</label>
         <select id="sport" v-model="selected.sport" @change="onChange($event)">
@@ -66,12 +40,6 @@
           <option v-for="sport in sports" :key="sport" :value="sport">
             {{ sport }}
           </option>
-        </select>
-
-        <label for="order">順序</label>
-        <select id="order" v-model="selected.order" @change="onChange($event)">
-          <option value="asc">昇順</option>
-          <option value="desc">降順</option>
         </select>
       </div>
 
@@ -87,32 +55,6 @@
           v-model="searchedName"
           @input="onChange($event)"
         />
-      </div>
-      <div
-        class="
-          flex
-          justify-around
-          border
-          py-1
-          px-12
-          rounded-md
-          items-center
-          max-w-xl
-          mx-auto
-        "
-        v-if="selected.startDate || selected.startDate"
-      >
-        <p v-if="selected.startDate">
-          {{ selected.startDate.getMonth() + 1 }}月
-          {{ selected.startDate.getDate() }}日
-        </p>
-        <p v-else></p>
-        <p class="mx-4 text-2xl">~</p>
-        <p v-if="selected.endDate">
-          {{ selected.endDate.getMonth() + 1 }}月
-          {{ selected.endDate.getDate() }}日
-        </p>
-        <p v-else></p>
       </div>
       <div class="grid gap-8 my-12 sm:grid-cols-2 lg:grid-cols-3">
         <FacilityCard
@@ -160,7 +102,6 @@ export default {
         "天白区",
         "県内",
       ],
-      facilities: ["千代田橋緑地テニスコート", "千種公園テニスコート"],
       sports: [
         "テニスコート",
         "野球場",
@@ -177,10 +118,7 @@ export default {
       ],
       selected: {
         sport: "",
-        startDate: null,
-        endDate: null,
-        facility: "",
-        order: "asc",
+        date: null,
       },
       searchedName: "",
       results: [],
@@ -188,21 +126,31 @@ export default {
     };
   },
   methods: {
-    setStartDate(date) {
-      this.selected.startDate = date;
-    },
-    setEndDate(date) {
-      this.selected.endDate = date;
-    },
-    onChange(event) {
-      console.log(this.selected.date);
+    setDate(date, kind) {
       this.filteredResult = this.results;
 
-      if (this.selected.facility !== "") {
-        this.filteredResult = this.filteredResult.filter(
-          (result) => result.name === this.selected.facility
-        );
+      this.selected.date = date;
+
+      if (this.selected.date !== null) {
+        this.filteredResult = this.filteredResult.filter((result) => {
+          let isFree = true;
+
+          if (this.selected.date.getTime() <= new Date().getTime()) {
+            return false;
+          }
+          for (const key in result.reservation) {
+            const res = result.reservation[key];
+            const reservationDate = new Date(res.year, res.month - 1, res.date);
+            if (reservationDate.getTime() === this.selected.date.getTime()) {
+              isFree = false;
+            }
+          }
+          return isFree;
+        });
       }
+    },
+    onChange(event) {
+      this.filteredResult = this.results;
 
       if (this.selected.sport !== "") {
         this.filteredResult = this.filteredResult.filter(
@@ -221,8 +169,6 @@ export default {
         sport: "",
         startDate: null,
         endDate: null,
-        facility: "",
-        order: "昇順",
       };
       this.filteredResult = this.results;
     },
@@ -235,6 +181,7 @@ export default {
             name
             sports
             area
+            reservation
             sys {
                 id
             }
@@ -267,9 +214,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.picker-container {
-  grid-template-columns: 1fr 50px;
-}
-</style>

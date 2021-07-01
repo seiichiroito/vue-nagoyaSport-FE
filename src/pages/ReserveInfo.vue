@@ -104,20 +104,20 @@ export default {
       }
 
       const title = calendar.querySelector(".el-calendar__title").innerHTML;
-      const displayedYear = title.slice(0, 4).trim();
-      const displayedMonth = title.slice(-3, -1).trim();
+      const displayedYear = parseInt(title.slice(0, 4).trim());
+      const displayedMonth = parseInt(title.slice(-3, -1).trim());
 
       const today = new Date();
-      if (today.getFullYear() > parseInt(displayedYear)) {
+      if (today.getFullYear() > displayedYear) {
         for (let i = 0; i < days.length; i++) {
           days[i].classList.add("reserved");
         }
-      } else if (today.getFullYear() === parseInt(displayedYear)) {
+      } else if (today.getFullYear() === displayedYear) {
         if (today.getMonth() + 1 > parseInt(displayedMonth)) {
           for (let i = 0; i < days.length; i++) {
             days[i].classList.add("reserved");
           }
-        } else if (today.getMonth() + 1 === parseInt(displayedMonth)) {
+        } else if (today.getMonth() + 1 === displayedMonth) {
           for (let i = 0; i < days.length; i++) {
             if (days[i].children[0].innerHTML <= today.getDate()) {
               days[i].classList.add("reserved");
@@ -126,23 +126,10 @@ export default {
         }
       }
 
-      if (!this.result.reservation) {
-        return;
-      }
-      const limitedReservationYear = this.result.reservation[displayedYear];
-
-      if (!limitedReservationYear) {
-        return;
-      }
-      const limitedReservationMonth = limitedReservationYear[displayedMonth];
-      if (!limitedReservationMonth) {
-        return;
-      }
-      const reservations = limitedReservationMonth.map((val) => val.date);
-
-      for (let i = 0; i < days.length; i++) {
-        if (reservations.includes(parseInt(days[i].children[0].innerHTML))) {
-          days[i].classList.add("reserved");
+      for (const res in this.result.reservation) {
+        const date = this.result.reservation[res];
+        if (date.year == displayedYear && date.month == displayedMonth) {
+          days[date.date - 1].classList.add("reserved");
         }
       }
     },
