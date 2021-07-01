@@ -12,11 +12,12 @@
       />
     </el-collapse-transition>
     <div class="flex-grow bg-light">
-      <RouterView v-slot="{ Component }">
+      <RouterView v-if="this.$route.meta.keepAlive" v-slot="{ Component }">
         <keep-alive>
           <component :is="Component" />
         </keep-alive>
       </RouterView>
+      <router-view v-else></router-view>
     </div>
     <TheFooter />
   </div>

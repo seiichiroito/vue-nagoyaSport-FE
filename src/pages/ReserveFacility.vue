@@ -171,6 +171,7 @@ export default {
         sport: "",
         area: "",
         facility: "",
+        order: "asc",
       };
       this.filteredResult = this.results;
     },

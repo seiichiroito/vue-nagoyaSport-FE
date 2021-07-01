@@ -90,12 +90,16 @@ export default {
         this.isLoading = false;
         this.$router.replace("/");
       } catch (err) {
+        console.log(err.message);
         if (err.message === "INVALID_PASSWORD") {
           this.$store.dispatch("showNotification", {
             type: "error",
-            messages: [
-              "メールパスワードが異なる、あるいはパスワードが正しくありません。",
-            ],
+            messages: ["パスワードが正しくありません。"],
+          });
+        } else if (err.message === "EMAIL_NOT_FOUND") {
+          this.$store.dispatch("showNotification", {
+            type: "error",
+            messages: ["そのメールアドレスは登録されていません。"],
           });
         }
         this.isLoading = false;

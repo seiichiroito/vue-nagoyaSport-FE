@@ -33,11 +33,13 @@ app.use(store);
 
 // Components
 import Button from "./components/UI/Button.vue";
+import BackButton from "./components/UI/BackButton.vue";
 import Heading from "./components/UI/Heading.vue";
 import PageTitle from "./components/UI/PageTitle.vue";
 import Input from "./components/UI/Input.vue";
 
 app.component("Button", Button);
+app.component("BackButton", BackButton);
 app.component("Heading", Heading);
 app.component("PageTitle", PageTitle);
 app.component("Input", Input);

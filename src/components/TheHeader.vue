@@ -38,6 +38,11 @@
               ログイン
             </RouterLink>
           </li>
+          <li v-if="isLoggedIn">
+            <RouterLink to="/setting" class="hover:text-darkBlue"
+              >設定</RouterLink
+            >
+          </li>
         </ul>
       </div>
     </div>

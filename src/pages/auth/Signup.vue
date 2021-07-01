@@ -99,7 +99,9 @@ export default {
         });
         this.isLoading = false;
 
-        this.$router.replace("/");
+        const redirectUrl = "/" + this.$route.query.redirect;
+
+        this.$router.replace(redirectUrl);
       } catch (err) {
         if (err.message === "EMAIL_EXIST") {
           this.$store.dispatch("showNotification", {

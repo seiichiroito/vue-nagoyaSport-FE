@@ -4,13 +4,13 @@
       <div class="my-8">
         <div class="flex justify-between">
           <Heading>お知らせ</Heading>
-          <RouterLink to="/" class="text-blue text-sm"
+          <!-- <RouterLink to="/info" class="text-blue text-sm"
             >すべてのお知らせを見る ></RouterLink
-          >
+          > -->
         </div>
         <ul class="grid divide-y">
           <li v-for="info in information" :key="info">
-            <RouterLink to="/" class="flex py-4">
+            <RouterLink :to="'/info/' + info.sys.id" class="flex py-4">
               <font-awesome-icon
                 icon="exclamation-circle"
                 class="text-sm mt-1"
@@ -76,25 +76,49 @@
 
 <script>
 import RelativeCard from "./RelativeCard.vue";
+import axios from "axios";
 export default {
   components: {
     RelativeCard,
   },
   data() {
     return {
-      information: [
-        {
-          title:
-            "稲永公園野球場（Ａ．Ｂ．Ｅ．Ｆ）の空き予約について（5月16日・23日）",
-        },
-        {
-          title: "このサイトを初めて利用される方へ",
-        },
-        {
-          title: "2月16日（火）に生じたアクセス障害について",
-        },
-      ],
+      information: null,
     };
+  },
+  mounted() {
+    const query = `
+          {
+            nagoyaInformationCollection {
+              items {
+                title
+                importance
+                sys {
+                  id
+                }
+                description{
+                  json
+                }
+              }
+            }
+          }
+        `;
+
+    axios
+      .post(
+        "https://graphql.contentful.com/content/v1/spaces/" +
+          import.meta.env.VITE_CONTENTFUL_SPACE_ID,
+        JSON.stringify({ query }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + import.meta.env.VITE_CONTENTFUL_API,
+          },
+        }
+      )
+      .then((res) => {
+        this.information = res.data.data.nagoyaInformationCollection.items;
+      });
   },
 };
 </script>

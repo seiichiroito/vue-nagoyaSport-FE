@@ -25,20 +25,24 @@ export const router = createRouter({
     {
       path: "/reserve-facility",
       component: () => import("./pages/ReserveFacility.vue"),
+      meta: { keepAlive: true },
     },
     {
       path: "/reserve-date",
       component: () => import("./pages/ReserveDate.vue"),
+      meta: { keepAlive: true },
     },
     {
       path: "/reserve/:facilityId",
       component: () => import("./pages/ReserveInfo.vue"),
       props: true,
+      // meta: { keepAlive: true },
     },
     {
       path: "/reserve/:facilityId/confirm",
       component: () => import("./pages/ReserveConfirmation.vue"),
       props: true,
+      meta: { keepAlive: true },
     },
     {
       path: "/reserve/completed",
@@ -59,13 +63,27 @@ export const router = createRouter({
       component: () => import("./pages/user/Setting.vue"),
       meta: { auth: true },
     },
+    {
+      path: "/info",
+      component: () => import("./pages/Info.vue"),
+    },
+    {
+      path: "/info/:infoId",
+      component: () => import("./pages/InfoDetail.vue"),
+    },
   ],
   scrollBehavior(to, from, savedPosition) {
-    return { top: 0 };
+    if (savedPosition) {
+      return savedPosition;
+    }
+    return {
+      left: 0,
+      top: 0,
+    };
   },
 });
 
-router.beforeEach((to, _, next) => {
+router.beforeEach((to, from, next) => {
   if (to.meta.unAuth && store.getters.isLoggedIn) {
     router.push("/");
   } else if (to.meta.auth && !store.getters.isLoggedIn) {

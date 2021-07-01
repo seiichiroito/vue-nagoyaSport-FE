@@ -15,17 +15,42 @@
         <p class="ml-2">予約可能</p>
       </div>
       <div ref="calendar">
-        <ElCalendar @click="clickDay" v-model="selectedDate">Hello</ElCalendar>
+        <ElCalendar @click="clickDay" v-model="selectedDate">
+          <template #dateCell="{ data }">
+            <p :class="data.isSelected ? 'is-selected' : ''">
+              {{ parseInt(data.day.split("-")[2]) }}
+            </p>
+          </template>
+        </ElCalendar>
       </div>
       <div class="py-8" v-if="availableDate">
         <div class="border p-4 rounded-md flex justify-between">
           <p>
-            {{ availableDate.getMonth() }}月 {{ availableDate.getDate() }}日
+            {{ availableDate.getMonth() + 1 }}月 {{ availableDate.getDate() }}日
           </p>
           <p>￥1500</p>
         </div>
-        <div class="mt-8 flex justify-end">
-          <Button :to="'/reserve/' + facilityId + '/confirm'"
+
+        <div v-if="!isLoggedIn">
+          <p class="my-4">予約をするにはアカウント登録が必要です</p>
+          <div class="flex justify-end">
+            <Button :to="'/signup?redirect=reserve/' + facilityId"
+              >アカウント登録へ進む</Button
+            >
+          </div>
+        </div>
+        <div v-else class="mt-8 flex justify-end">
+          <Button
+            :to="{
+              path: `/reserve/${facilityId}/confirm`,
+              query: {
+                name: result.name,
+                year: availableDate.getFullYear(),
+                month: availableDate.getMonth() + 1,
+                date: availableDate.getDate(),
+                price: 1500,
+              },
+            }"
             >確認画面に進む</Button
           >
         </div>
@@ -36,15 +61,7 @@
 
 <script>
 import axios from "axios";
-import BackButton from "../components/UI/BackButton.vue";
-
-const numbers = ["3", "8", "11", "15", "25"];
-const reservedNumbers = ["5", "12", "19", "26"];
-
 export default {
-  components: {
-    BackButton,
-  },
   props: {
     facilityId: String,
   },
@@ -58,35 +75,22 @@ export default {
   },
   methods: {
     clickDay(el) {
-      if (el.target.className !== "el-calendar-day") {
+      this.showAvailable();
+      if (
+        el.target.className.includes("reserved") ||
+        el.target.parentElement.className.includes("reserved")
+      ) {
         return;
       }
+
       const calendar = this.$refs.calendar;
-      const days = calendar.querySelectorAll(".current .el-calendar-day");
-      const title = calendar.querySelector(".el-calendar__title");
-      const displayedMonth = title.innerHTML.slice(-3, -1).trim();
+      const day = calendar.querySelector(".is-selected");
 
-      let previousSelectedDate;
-      for (let i = 0; i < days.length; i++) {
-        if (days[i].style.backgroundColor === "rgb(255, 209, 102)") {
-          previousSelectedDate = days[i].children[0].innerHTML;
-        }
-        if (numbers.includes(days[i].children[0].innerHTML)) {
-          days[i].style.backgroundColor = "#118AB2";
-        }
+      if (day.children[0].className.includes("reserved")) {
+        return;
       }
 
-      const selectedDay = el.target.children[0].innerHTML;
-      if (numbers.includes(selectedDay)) {
-        el.target.style.backgroundColor = "#FFD166";
-        this.availableDate = this.selectedDate;
-      } else {
-        for (let i = 0; i < days.length; i++) {
-          if (days[i].children[0].innerHTML === previousSelectedDate) {
-            days[i].style.backgroundColor = "#FFD166";
-          }
-        }
-      }
+      this.availableDate = this.selectedDate;
     },
     handleBlur(el) {
       el.target.style.backgroundColor = "#118AB2";
@@ -96,15 +100,56 @@ export default {
       const days = calendar.querySelectorAll(".current .el-calendar-day");
 
       for (let i = 0; i < days.length; i++) {
-        if (numbers.includes(days[i].children[0].innerHTML)) {
-          days[i].style.backgroundColor = "#118AB2";
+        days[i].classList.remove("reserved");
+      }
+
+      const title = calendar.querySelector(".el-calendar__title").innerHTML;
+      const displayedYear = title.slice(0, 4).trim();
+      const displayedMonth = title.slice(-3, -1).trim();
+
+      const today = new Date();
+      if (today.getFullYear() > parseInt(displayedYear)) {
+        for (let i = 0; i < days.length; i++) {
+          days[i].classList.add("reserved");
+        }
+      } else if (today.getFullYear() === parseInt(displayedYear)) {
+        if (today.getMonth() + 1 > parseInt(displayedMonth)) {
+          for (let i = 0; i < days.length; i++) {
+            days[i].classList.add("reserved");
+          }
+        } else if (today.getMonth() + 1 === parseInt(displayedMonth)) {
+          for (let i = 0; i < days.length; i++) {
+            if (days[i].children[0].innerHTML <= today.getDate()) {
+              days[i].classList.add("reserved");
+            }
+          }
         }
       }
+
+      if (!this.result.reservation) {
+        return;
+      }
+      const limitedReservationYear = this.result.reservation[displayedYear];
+
+      if (!limitedReservationYear) {
+        return;
+      }
+      const limitedReservationMonth = limitedReservationYear[displayedMonth];
+      if (!limitedReservationMonth) {
+        return;
+      }
+      const reservations = limitedReservationMonth.map((val) => val.date);
+
       for (let i = 0; i < days.length; i++) {
-        if (reservedNumbers.includes(days[i].children[0].innerHTML)) {
-          days[i].style.backgroundColor = "#8e8e8e";
+        if (reservations.includes(parseInt(days[i].children[0].innerHTML))) {
+          days[i].classList.add("reserved");
         }
       }
+    },
+  },
+  computed: {
+    isLoggedIn() {
+      return this.$store.getters.isLoggedIn;
     },
   },
   mounted() {
@@ -114,6 +159,7 @@ export default {
             name
             address
             info
+            reservation
             imageCollection {
             items {
                 url
@@ -140,8 +186,8 @@ export default {
       )
       .then((res) => {
         this.result = res.data.data.facility;
+        this.showAvailable();
       });
-    this.showAvailable();
   },
 };
 </script>
@@ -149,13 +195,21 @@ export default {
 <style lang="scss">
 .el-calendar-table {
   .current {
+    &.is-selected {
+      .el-calendar-day {
+        background-color: #ffd166;
+      }
+    }
     &.is-today {
       .el-calendar-day {
-        border: 1px solid var(--blue);
+        color: #fff;
       }
     }
     .el-calendar-day {
-      background-color: #ddd;
+      background-color: #118ab2;
+      &.reserved {
+        background-color: #ddd;
+      }
     }
   }
 }
