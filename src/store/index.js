@@ -10,12 +10,28 @@ const store = createStore({
   },
   state() {
     return {
-      hello: "World",
+      notification: {},
     };
   },
   getters: {
-    hello(state) {
-      return state.hello;
+    notification(state) {
+      return state.notification;
+    },
+  },
+  actions: {
+    clearNotification(context) {
+      context.commit("setNotification", {});
+    },
+    showNotification(context, payload) {
+      context.commit("setNotification", payload);
+    },
+  },
+  mutations: {
+    setNotification(state, payload) {
+      state.notification = {
+        type: payload.type,
+        messages: payload.messages,
+      };
     },
   },
 });

@@ -1,4 +1,5 @@
 <template>
+  <BaseLoading v-if="isLoading" />
   <div class="bg-light py-8">
     <div class="app-container">
       <PageTitle>アカウント登録</PageTitle>
@@ -15,7 +16,7 @@
           <Input
             id="password"
             type="password"
-            placeholder="パスワード"
+            placeholder="パスワード（6文字以上）"
             :value="formState.password"
             @input="onInput"
           />
@@ -23,7 +24,7 @@
             id="passwordConfirmation"
             type="password"
             placeholder="確認用パスワード"
-            class="mb-12"
+            class=""
             :value="formState.passwordConfirmation"
             @input="onInput"
           />
@@ -46,6 +47,7 @@
 </template>
 
 <script>
+import BaseLoading from "../../components/UI/BaseLoading.vue";
 export default {
   data() {
     return {
@@ -54,22 +56,70 @@ export default {
         password: "",
         passwordConfirmation: "",
       },
+      isLoading: false,
     };
   },
+  components: {
+    BaseLoading,
+  },
   methods: {
-    submitForm() {
+    async submitForm() {
+      this.clearNotification();
+      let isError = false;
+      const errors = [];
+
+      if (this.formState.email === "") {
+        errors.push("メールアドレスを入力してください。");
+        isError = true;
+      }
+      if (this.formState.password.length < 6) {
+        errors.push("パスワードは6文字以上入力してください。");
+        this.formState.password = "";
+        this.formState.passwordConfirmation = "";
+        isError = true;
+      }
+      if (this.formState.password !== this.formState.passwordConfirmation) {
+        errors.push("パスワードが合いません。");
+        this.formState.password = "";
+        this.formState.passwordConfirmation = "";
+        isError = true;
+      }
+      if (isError) {
+        this.$store.dispatch("showNotification", {
+          type: "error",
+          messages: errors,
+        });
+        return;
+      }
+      this.isLoading = true;
       try {
-        this.$store.dispatch("signup", {
+        await this.$store.dispatch("signup", {
           email: this.formState.email,
           password: this.formState.password,
         });
-      } catch (err) {}
+        this.isLoading = false;
+
+        this.$router.replace("/");
+      } catch (err) {
+        if (err.message === "EMAIL_EXIST") {
+          this.$store.dispatch("showNotification", {
+            type: "error",
+            messages: [
+              "そのメールアドレスはすでにアカウントが存在しています。",
+            ],
+          });
+        }
+        this.isLoading = false;
+      }
     },
     onInput(event) {
       this.formState = {
         ...this.formState,
         [event.target.id]: event.target.value,
       };
+    },
+    clearNotification() {
+      this.$store.dispatch("clearNotification");
     },
   },
 };

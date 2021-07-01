@@ -71,6 +71,7 @@ router.beforeEach((to, _, next) => {
   } else if (to.meta.auth && !store.getters.isLoggedIn) {
     router.push("/login");
   } else {
+    store.dispatch("clearNotification");
     next();
   }
 });

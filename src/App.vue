@@ -4,6 +4,13 @@
     <el-collapse-transition>
       <TheNavbar v-if="navIsOpen" @closeNav="closeNav" />
     </el-collapse-transition>
+    <el-collapse-transition>
+      <BaseNotification
+        v-if="notification.messages"
+        :notification="notification"
+        :type="notification.type"
+      />
+    </el-collapse-transition>
     <div class="flex-grow bg-light">
       <RouterView v-slot="{ Component }">
         <keep-alive>
@@ -20,6 +27,7 @@ import "normalize.css";
 
 import Home from "./pages/Home.vue";
 import TheHeader from "./components/TheHeader.vue";
+import BaseNotification from "./components/UI/BaseNotification.vue";
 import TheNavbar from "./components/TheNavbar.vue";
 import TheFooter from "./components/TheFooter.vue";
 
@@ -37,9 +45,15 @@ export default {
       this.navIsOpen = false;
     },
   },
+  computed: {
+    notification() {
+      return this.$store.getters.notification;
+    },
+  },
   components: {
     Home,
     TheHeader,
+    BaseNotification,
     TheNavbar,
     TheFooter,
   },

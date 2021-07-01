@@ -1,5 +1,6 @@
 <template>
   <div class="bg-light py-8">
+    <BaseLoading v-if="isLoading" />
     <div class="app-container">
       <PageTitle>ログイン</PageTitle>
       <div class="mt-8 p-6 border border-blue shadow-lg max-w-sm mx-auto">
@@ -40,6 +41,8 @@
 </template>
 
 <script>
+import BaseLoading from "../../components/UI/BaseLoading.vue";
+
 export default {
   data() {
     return {
@@ -50,23 +53,62 @@ export default {
       isLoading: false,
     };
   },
+  components: {
+    BaseLoading,
+  },
   methods: {
     async submitForm() {
+      this.clearNotification();
+      let isError = false;
+      const errors = [];
+
+      if (this.formState.email === "") {
+        errors.push("メールアドレスを入力してください。");
+        isError = true;
+      }
+      if (this.formState.password.length === 0) {
+        errors.push("パスワードを入力してください。");
+        this.formState.password = "";
+        this.formState.passwordConfirmation = "";
+        isError = true;
+      }
+
+      if (isError) {
+        this.$store.dispatch("showNotification", {
+          type: "error",
+          messages: errors,
+        });
+        return;
+      }
+
+      this.isLoading = true;
       try {
-        this.isLoading = true;
         await this.$store.dispatch("login", {
           email: this.formState.email,
           password: this.formState.password,
         });
+        this.isLoading = false;
         this.$router.replace("/");
-      } catch (err) {}
-      this.isLoading = false;
+      } catch (err) {
+        if (err.message === "INVALID_PASSWORD") {
+          this.$store.dispatch("showNotification", {
+            type: "error",
+            messages: [
+              "メールパスワードが異なる、あるいはパスワードが正しくありません。",
+            ],
+          });
+        }
+        this.isLoading = false;
+      }
     },
     onInput(event) {
       this.formState = {
         ...this.formState,
         [event.target.id]: event.target.value,
       };
+    },
+    clearNotification() {
+      this.$store.dispatch("clearNotification");
     },
   },
 };
