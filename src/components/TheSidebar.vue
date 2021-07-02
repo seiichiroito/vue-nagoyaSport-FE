@@ -8,14 +8,14 @@
             >すべてのお知らせを見る ></RouterLink
           > -->
         </div>
-        <ul class="grid divide-y">
-          <li v-for="info in information" :key="info">
-            <RouterLink :to="'/info/' + info.sys.id" class="flex py-4">
+        <ul class="grid divide-y" id="news">
+          <li v-for="news in allNews" :key="news.id">
+            <RouterLink :to="'/info/' + news.id" class="flex py-4">
               <font-awesome-icon
                 icon="exclamation-circle"
                 class="text-sm mt-1"
               />
-              <p class="ml-2">{{ info.title }}</p>
+              <p class="ml-2">{{ news.fields.title }}</p>
             </RouterLink>
           </li>
         </ul>
@@ -76,49 +76,47 @@
 
 <script>
 import RelativeCard from "./RelativeCard.vue";
-import axios from "axios";
+import { getAllNews } from "../middleware/restAPI/airtable";
+import { ElLoading } from "element-plus";
 export default {
   components: {
     RelativeCard,
   },
   data() {
     return {
-      information: null,
+      allNews: null,
+      newsLoader: null,
     };
   },
-  mounted() {
-    const query = `
-          {
-            nagoyaInformationCollection {
-              items {
-                title
-                importance
-                sys {
-                  id
-                }
-                description{
-                  json
-                }
-              }
-            }
-          }
-        `;
-
-    axios
-      .post(
-        "https://graphql.contentful.com/content/v1/spaces/" +
-          import.meta.env.VITE_CONTENTFUL_SPACE_ID,
-        JSON.stringify({ query }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + import.meta.env.VITE_CONTENTFUL_API,
-          },
-        }
-      )
-      .then((res) => {
-        this.information = res.data.data.nagoyaInformationCollection.items;
+  methods: {
+    async setNews() {
+      this.setLoader();
+      this.allNews = await getAllNews();
+      this.closeLoader();
+    },
+    closeLoader() {
+      this.newsLoader.close();
+    },
+    setLoader() {
+      this.newsLoader = ElLoading.service({
+        target: document.querySelector("#news"),
       });
+    },
+  },
+  mounted() {
+    this.setNews();
   },
 };
 </script>
+
+<style lang="scss">
+#news {
+  .el-loading-mask {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  .el-loading-spinner {
+    display: flex;
+    justify-content: center;
+  }
+}
+</style>

@@ -27,5 +27,11 @@
     font-size: 1rem;
     line-height: 1.8rem;
   }
+  a {
+    color: #118ab2;
+    :hover {
+      color: #073b4c;
+    }
+  }
 }
 </style>

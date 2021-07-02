@@ -56,15 +56,18 @@
           @input="onChange($event)"
         />
       </div>
-      <div class="grid gap-8 my-12 sm:grid-cols-2 lg:grid-cols-3">
+      <div
+        class="grid gap-8 my-12 sm:grid-cols-2 lg:grid-cols-3"
+        id="facilities"
+      >
         <FacilityCard
-          v-for="result in filteredResult"
-          :to="'/reserve/' + result.sys.id"
-          :key="result.name"
-          :name="result.name"
-          :imgUrl="result.imageCollection.items[0].url"
-          :sports="result.sports"
-          :area="result.area"
+          v-for="facility in facilities"
+          :to="'/reserve/' + facility.id"
+          :key="facility.id"
+          :name="facility.fields.name"
+          :imgUrl="facility.fields.photos[0].url"
+          :type="facility.fields.type"
+          :area="facility.fields.area"
         />
       </div>
     </div>
@@ -72,9 +75,10 @@
 </template>
 
 <script>
-import axios from "axios";
 import FacilityCard from "../components/FacilityCard.vue";
 import DatePicker from "../components/UI/DatePicker.vue";
+import { getAllFacility } from "../middleware/restAPI/airtable";
+import { ElLoading } from "element-plus";
 
 export default {
   components: {
@@ -121,30 +125,31 @@ export default {
         date: null,
       },
       searchedName: "",
-      results: [],
+      facilities: [],
+      facilityLoader: null,
       filteredResult: [],
     };
   },
   methods: {
-    setDate(date, kind) {
-      this.filteredResult = this.results;
+    setDate(date) {
+      this.filterdFacilities = this.facilities;
 
       this.selected.date = date;
 
       if (this.selected.date !== null) {
-        this.filteredResult = this.filteredResult.filter((result) => {
+        this.filterdFacilities = this.filterdFacilities.filter((facility) => {
           let isFree = true;
 
-          if (this.selected.date.getTime() <= new Date().getTime()) {
-            return false;
-          }
-          for (const key in result.reservation) {
-            const res = result.reservation[key];
-            const reservationDate = new Date(res.year, res.month - 1, res.date);
-            if (reservationDate.getTime() === this.selected.date.getTime()) {
-              isFree = false;
-            }
-          }
+          // if (this.selected.date.getTime() <= new Date().getTime()) {
+          //   return false;
+          // }
+          // for (const key in result.reservation) {
+          //   const res = result.reservation[key];
+          //   const reservationDate = new Date(res.year, res.month - 1, res.date);
+          //   if (reservationDate.getTime() === this.selected.date.getTime()) {
+          //     isFree = false;
+          //   }
+          // }
           return isFree;
         });
       }
@@ -172,45 +177,33 @@ export default {
       };
       this.filteredResult = this.results;
     },
+    async setFacilities() {
+      this.setLoader();
+      this.facilities = await getAllFacility();
+      this.filterdFacilities = this.facilities;
+      console.log(this.facilities);
+      this.closeLoader();
+    },
+    closeLoader() {
+      this.facilityLoader.close();
+    },
+    setLoader() {
+      this.facilityLoader = ElLoading.service({
+        target: document.querySelector("#facilities"),
+      });
+    },
   },
   mounted() {
-    const query = `
-        {
-        facilityCollection {
-            items {
-            name
-            sports
-            area
-            reservation
-            sys {
-                id
-            }
-            imageCollection {
-                items {
-                url
-                }
-            }
-            }
-        }
-        }
-        `;
-
-    axios
-      .post(
-        "https://graphql.contentful.com/content/v1/spaces/" +
-          import.meta.env.VITE_CONTENTFUL_SPACE_ID,
-        JSON.stringify({ query }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + import.meta.env.VITE_CONTENTFUL_API,
-          },
-        }
-      )
-      .then((res) => {
-        this.results = res.data.data.facilityCollection.items;
-        this.filteredResult = this.results;
-      });
+    this.setFacilities();
   },
 };
 </script>
+
+<style lang="scss">
+#facilities {
+  .el-loading-spinner {
+    display: flex;
+    justify-content: center;
+  }
+}
+</style>

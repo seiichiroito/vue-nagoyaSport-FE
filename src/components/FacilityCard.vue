@@ -5,12 +5,8 @@
       <p>{{ name }}</p>
       <div class="mt-4 flex justify-between text-sm items-center">
         <ul>
-          <li
-            v-for="sport in sports"
-            :key="sport"
-            class="border border-blue py-0.5 px-1 rounded-full"
-          >
-            {{ sport }}
+          <li class="border border-blue py-0.5 px-1 rounded-full">
+            {{ type }}
           </li>
         </ul>
         <p>{{ area }}</p>
@@ -24,7 +20,7 @@ export default {
   props: {
     imgUrl: String,
     name: String,
-    sports: Array,
+    type: String,
     area: String,
   },
 };

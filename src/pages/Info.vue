@@ -1,12 +1,12 @@
 <template>
   <StaticLayout>
-    <template #heading>{{ info.title }}</template>
+    <template #heading>{{ news.title }}</template>
   </StaticLayout>
 </template>
 
 <script>
-import axios from "axios";
 import StaticLayout from "../components/layout/StaticLayout.vue";
+import { getNews } from "../middleware/restAPI/airtable";
 
 export default {
   props: {
@@ -14,42 +14,20 @@ export default {
   },
   data() {
     return {
-      info: null,
+      news: null,
     };
   },
   components: {
     StaticLayout,
   },
+  methods: {
+    async setNews() {
+      this.news = await getNews(this.infoId);
+    },
+  },
   mounted() {
-    const query = `
-        query ($id:String!){
-        nagoyaInformation(id:$id) {
-            title
-            importance
-            sys {
-            id
-            }
-            description{
-            json
-            }
-        }
-        }
-        `;
-    axios
-      .post(
-        "https://graphql.contentful.com/content/v1/spaces/" +
-          import.meta.env.VITE_CONTENTFUL_SPACE_ID,
-        JSON.stringify({ query, variables: { id: infoId } }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + import.meta.env.VITE_CONTENTFUL_API,
-          },
-        }
-      )
-      .then((res) => {
-        this.info = res.data.data.nagoyaInformation;
-      });
+    console.log("HELLO");
+    this.setNews();
   },
 };
 </script>

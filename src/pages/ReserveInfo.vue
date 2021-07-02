@@ -1,15 +1,17 @@
 <template>
   <div class="bg-light py-8">
-    <div class="app-container" v-if="result">
+    <BaseLoading v-if="isLoading" />
+    <div class="app-container">
       <div>
         <BackButton />
       </div>
-      <Heading>{{ result.name }}</Heading>
+      <Heading v-if="facility.length !== 0">{{ facility.fields.name }}</Heading>
       <div class="flex items-center mb-4">
+        <div class="ml-4 bg-gray w-4 h-4 rounded-full"></div>
+        <p class="ml-2">利用不可</p>
+
         <div class="ml-4 bg-lightGray w-4 h-4 rounded-full"></div>
         <p class="ml-2">予約済み</p>
-        <div class="ml-4 bg-gray w-4 h-4 rounded-full"></div>
-        <p class="ml-2">休館日</p>
 
         <div class="ml-4 bg-blue w-4 h-4 rounded-full"></div>
         <p class="ml-2">予約可能</p>
@@ -44,7 +46,7 @@
             :to="{
               path: `/reserve/${facilityId}/confirm`,
               query: {
-                name: result.name,
+                name: facility.fields.name,
                 year: availableDate.getFullYear(),
                 month: availableDate.getMonth() + 1,
                 date: availableDate.getDate(),
@@ -60,17 +62,18 @@
 </template>
 
 <script>
-import axios from "axios";
+import { getFacility } from "../middleware/restAPI/airtable";
 export default {
   props: {
     facilityId: String,
   },
   data() {
     return {
-      result: Object,
+      facility: [],
       selectedDate: null,
       availableDate: null,
       selected: false,
+      isLoading: false,
     };
   },
   methods: {
@@ -78,7 +81,9 @@ export default {
       this.showAvailable();
       if (
         el.target.className.includes("reserved") ||
-        el.target.parentElement.className.includes("reserved")
+        el.target.parentElement.className.includes("reserved") ||
+        el.target.className.includes("unabled") ||
+        el.target.parentElement.className.includes("unabled")
       ) {
         return;
       }
@@ -86,7 +91,10 @@ export default {
       const calendar = this.$refs.calendar;
       const day = calendar.querySelector(".is-selected");
 
-      if (day.children[0].className.includes("reserved")) {
+      if (
+        day.children[0].className.includes("reserved") ||
+        day.children[0].className.includes("unabled")
+      ) {
         return;
       }
 
@@ -101,6 +109,7 @@ export default {
 
       for (let i = 0; i < days.length; i++) {
         days[i].classList.remove("reserved");
+        days[i].classList.remove("unabled");
       }
 
       const title = calendar.querySelector(".el-calendar__title").innerHTML;
@@ -108,30 +117,32 @@ export default {
       const displayedMonth = parseInt(title.slice(-3, -1).trim());
 
       const today = new Date();
-      if (today.getFullYear() > displayedYear) {
-        for (let i = 0; i < days.length; i++) {
-          days[i].classList.add("reserved");
+      days.forEach((day, index) => {
+        const eachDay = new Date(displayedYear, displayedMonth - 1, index + 1);
+        if (eachDay.getTime() < today.getTime()) {
+          day.classList.add("unabled");
         }
-      } else if (today.getFullYear() === displayedYear) {
-        if (today.getMonth() + 1 > parseInt(displayedMonth)) {
-          for (let i = 0; i < days.length; i++) {
-            days[i].classList.add("reserved");
-          }
-        } else if (today.getMonth() + 1 === displayedMonth) {
-          for (let i = 0; i < days.length; i++) {
-            if (days[i].children[0].innerHTML <= today.getDate()) {
-              days[i].classList.add("reserved");
-            }
-          }
-        }
-      }
+      });
 
-      for (const res in this.result.reservation) {
-        const date = this.result.reservation[res];
-        if (date.year == displayedYear && date.month == displayedMonth) {
-          days[date.date - 1].classList.add("reserved");
-        }
+      if (!this.facility.fields.reservationDate) {
+        return;
       }
+      this.facility.fields.reservationDate.map((res) => {
+        const resDate = new Date(res);
+
+        if (
+          resDate.getFullYear() === displayedYear &&
+          resDate.getMonth() + 1 === displayedMonth
+        ) {
+          days[resDate.getDate() - 1].classList.add("reserved");
+        }
+      });
+    },
+    async setFacility() {
+      this.isLoading = true;
+      this.facility = await getFacility(this.facilityId);
+      this.showAvailable();
+      this.isLoading = false;
     },
   },
   computed: {
@@ -140,41 +151,7 @@ export default {
     },
   },
   mounted() {
-    const query = `
-        query ($id:String!){
-        facility(id:$id){
-            name
-            address
-            info
-            reservation
-            imageCollection {
-            items {
-                url
-                title
-                sys {
-                id
-                }
-            }
-            }
-        }
-        }
-        `;
-    axios
-      .post(
-        "https://graphql.contentful.com/content/v1/spaces/" +
-          import.meta.env.VITE_CONTENTFUL_SPACE_ID,
-        JSON.stringify({ query, variables: { id: this.facilityId } }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + import.meta.env.VITE_CONTENTFUL_API,
-          },
-        }
-      )
-      .then((res) => {
-        this.result = res.data.data.facility;
-        this.showAvailable();
-      });
+    this.setFacility();
   },
 };
 </script>
@@ -196,6 +173,9 @@ export default {
       background-color: #118ab2;
       &.reserved {
         background-color: #ddd;
+      }
+      &.unabled {
+        background-color: #555;
       }
     }
   }

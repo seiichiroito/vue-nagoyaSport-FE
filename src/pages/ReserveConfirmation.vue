@@ -16,28 +16,63 @@
         利用者IDは電話でやり取りする場合に予約者の確認として使われる場合があります。
       </p>
       <div class="mt-8 flex justify-end">
-        <Button to="/reserve/completed">予約する</Button>
+        <button
+          class="bg-blue text-light py-2 px-8 rounded-md hover:bg-darkBlue"
+          @click="makeReservation"
+        >
+          予約する
+        </button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { addReservation } from "../middleware/restAPI/airtable";
+import { v4 as uuidv4 } from "uuid";
+
 export default {
   data() {
     return {
       name: String,
-      day: {
-        year: String,
-        month: String,
-        date: String,
-      },
+
+      year: String,
+      month: String,
+      date: String,
+
       price: String,
     };
+  },
+  props: {
+    facilityId: String,
   },
   computed: {
     userId() {
       return this.$store.getters.userId;
+    },
+  },
+  methods: {
+    async makeReservation() {
+      const date = `${this.year}-${this.month}-${this.date}`;
+      try {
+        await addReservation(
+          {
+            fields: {
+              id: uuidv4(),
+              date: date,
+              userId: this.userId,
+              Facility: [this.facilityId],
+            },
+          },
+          this.name
+        );
+        this.$router.replace("/reserve/completed");
+      } catch (err) {
+        this.$store.dispatch("showNotification", {
+          type: "error",
+          messages: [err.message],
+        });
+      }
     },
   },
   created() {

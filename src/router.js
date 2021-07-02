@@ -68,8 +68,9 @@ export const router = createRouter({
       component: () => import("./pages/Info.vue"),
     },
     {
-      path: "/info/:infoId",
+      path: "/info/:newsId",
       component: () => import("./pages/InfoDetail.vue"),
+      props: true,
     },
   ],
   scrollBehavior(to, from, savedPosition) {

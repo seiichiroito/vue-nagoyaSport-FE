@@ -46,15 +46,18 @@
         />
       </div>
 
-      <div class="grid gap-8 my-12 sm:grid-cols-2 lg:grid-cols-3">
+      <div
+        class="grid gap-8 my-12 sm:grid-cols-2 lg:grid-cols-3"
+        id="facilities"
+      >
         <FacilityCard
-          v-for="result in filteredResult"
-          :to="'/reserve/' + result.sys.id"
-          :key="result.name"
-          :name="result.name"
-          :imgUrl="result.imageCollection.items[0].url"
-          :sports="result.sports"
-          :area="result.area"
+          v-for="facility in filteredFacilities"
+          :to="'/reserve/' + facility.id"
+          :key="facility.id"
+          :name="facility.fields.name"
+          :imgUrl="facility.fields.photos[0].url"
+          :type="facility.fields.type"
+          :area="facility.fields.area"
         />
       </div>
     </div>
@@ -62,8 +65,9 @@
 </template>
 
 <script>
-import axios from "axios";
 import FacilityCard from "../components/FacilityCard.vue";
+import { getAllFacility } from "../middleware/restAPI/airtable";
+import { ElLoading } from "element-plus";
 
 export default {
   components: {
@@ -71,6 +75,8 @@ export default {
   },
   data() {
     return {
+      facilityLoader: null,
+
       areas: [
         "千種区",
         "東区",
@@ -109,29 +115,29 @@ export default {
         area: "",
       },
       searchedName: "",
-      results: [],
-      filteredResult: [],
+      facilities: [],
+      filteredFacilities: null,
     };
   },
   methods: {
     onChange(event) {
-      this.filteredResult = this.results;
+      this.filteredFacilities = this.facilities;
 
       if (this.selected.area !== "") {
-        this.filteredResult = this.filteredResult.filter(
-          (result) => result.area === this.selected.area
+        this.filteredFacilities = this.filteredFacilities.filter(
+          (facility) => facility.fields.area === this.selected.area
         );
       }
 
       if (this.selected.sport !== "") {
-        this.filteredResult = this.filteredResult.filter(
-          (result) => result.sports.indexOf(this.selected.sport) > -1
+        this.filteredFacilities = this.filteredFacilities.filter(
+          (facility) => facility.fields.type === this.selected.sport
         );
       }
 
       if (this.searchedName !== "") {
-        this.filteredResult = this.filteredResult.filter((result) =>
-          result.name.includes(this.searchedName)
+        this.filteredFacilities = this.filteredFacilities.filter((facility) =>
+          facility.fields.name.includes(this.searchedName)
         );
       }
     },
@@ -142,44 +148,33 @@ export default {
       };
       this.filteredResult = this.results;
     },
-  },
-  mounted() {
-    const query = `
-        {
-        facilityCollection {
-            items {
-            name
-            sports
-            area
-            sys {
-                id
-            }
-            imageCollection {
-                items {
-                url
-                }
-            }
-            }
-        }
-        }
-        `;
-
-    axios
-      .post(
-        "https://graphql.contentful.com/content/v1/spaces/" +
-          import.meta.env.VITE_CONTENTFUL_SPACE_ID,
-        JSON.stringify({ query }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + import.meta.env.VITE_CONTENTFUL_API,
-          },
-        }
-      )
-      .then((res) => {
-        this.results = res.data.data.facilityCollection.items;
-        this.filteredResult = this.results;
+    async setFacilities() {
+      this.setLoader();
+      this.facilities = await getAllFacility();
+      this.filteredFacilities = this.facilities;
+      this.closeLoader();
+    },
+    closeLoader() {
+      this.facilityLoader.close();
+    },
+    setLoader() {
+      this.facilityLoader = ElLoading.service({
+        target: document.querySelector("#facilities"),
       });
+    },
+  },
+
+  mounted() {
+    this.setFacilities();
   },
 };
 </script>
+
+<style lang="scss">
+#facilities {
+  .el-loading-spinner {
+    display: flex;
+    justify-content: center;
+  }
+}
+</style>
