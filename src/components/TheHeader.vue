@@ -14,11 +14,9 @@
         </p>
       </div>
       <div>
-        <font-awesome-icon
-          icon="bars"
-          class="text-2xl md:hidden"
-          @click="$emit('toggleNav')"
-        />
+        <span class="p-4 text-3xl md:hidde" @click="$emit('toggleNav')">
+          <font-awesome-icon icon="bars" />
+        </span>
         <ul class="hidden md:flex text-base space-x-6">
           <li>
             <RouterLink to="/" class="hover:text-darkBlue"> ホーム </RouterLink>

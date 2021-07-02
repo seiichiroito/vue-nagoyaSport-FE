@@ -1,5 +1,7 @@
 <template>
   <div class="bg-light py-8">
+    <BaseLoading v-if="isLoading" />
+
     <div class="app-container setting-container">
       <BackButton />
       <PageTitle>設定</PageTitle>
@@ -86,7 +88,11 @@ export default {
     return {
       formState: {
         email: "",
+        currentPassword: "",
+        newPassword: "",
+        confirmationNewPassword: "",
       },
+      isLoading: false,
     };
   },
   components: {
@@ -94,17 +100,43 @@ export default {
     SwiperSlide,
   },
   methods: {
+    setUserEmail() {
+      this.formState.email = this.$store.getters.email;
+    },
     onSwiper(swiper) {
       // console.log(swiper);
     },
     onSlideChange() {
       // console.log("slide change");
     },
-    submitForm() {
-      console.log("submit");
+    async submitForm() {
+      if (this.isLoading) {
+        return;
+      }
+      try {
+        this.isLoading = true;
+        await this.$store.dispatch("changeEmail", {
+          email: this.formState.email,
+        });
+        this.isLoading = false;
+        this.$store.dispatch("showNotification", {
+          type: "success",
+          messages: ["メールの変更に成功しました。"],
+        });
+      } catch (err) {
+        this.isLoading = false;
+
+        this.$store.dispatch("showNotification", {
+          type: "error",
+          messages: ["メールの変更に失敗しました。"],
+        });
+      }
     },
-    onInput() {
-      console.log("INPUt");
+    onInput(event) {
+      this.formState = {
+        ...this.formState,
+        [event.target.id]: event.target.value,
+      };
     },
     logout() {
       this.$store.dispatch("logout");
@@ -124,6 +156,9 @@ export default {
         },
       };
     },
+  },
+  mounted() {
+    this.setUserEmail();
   },
 };
 </script>

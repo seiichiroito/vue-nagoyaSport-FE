@@ -99,7 +99,7 @@ export default {
         });
         this.isLoading = false;
 
-        const redirectUrl = "/" + this.$route.query.redirect;
+        const redirectUrl = "/" + (this.$route.query.redirect || "");
 
         this.$router.replace(redirectUrl);
       } catch (err) {
