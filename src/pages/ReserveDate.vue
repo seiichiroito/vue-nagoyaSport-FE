@@ -175,7 +175,7 @@ export default {
         startDate: null,
         endDate: null,
       };
-      this.filteredResult = this.results;
+      this.filteredFacilities = this.facilities;
     },
     async setFacilities() {
       this.setLoader();

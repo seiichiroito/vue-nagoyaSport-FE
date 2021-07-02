@@ -1,6 +1,7 @@
 <template>
   <section class="bg-light">
     <div class="app-container max-w-3xl py-8 px-6 grid justify-center">
+      <BackButton class="justify-self-start" />
       <h1 class="text-center mb-8 font-bold text-2xl">
         <slot name="heading"></slot>
       </h1>

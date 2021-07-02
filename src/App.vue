@@ -75,7 +75,7 @@ body {
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 }
 * {
-  /* outline: 1px solid #ddd; */
+  /* outline: 1px solid #555; */
 }
 .app-container {
   max-width: 1024px;

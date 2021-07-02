@@ -146,7 +146,7 @@ export default {
         sport: "",
         area: "",
       };
-      this.filteredResult = this.results;
+      this.filteredFacilities = this.facilities;
     },
     async setFacilities() {
       this.setLoader();
