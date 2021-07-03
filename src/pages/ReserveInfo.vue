@@ -26,11 +26,41 @@
         </ElCalendar>
       </div>
       <div class="py-8" v-if="availableDate">
-        <div class="border p-4 rounded-md flex justify-between">
-          <p>
+        <div class="grid gap-4">
+          <p class="text-xl">
             {{ availableDate.getMonth() + 1 }}月 {{ availableDate.getDate() }}日
           </p>
-          <p>￥ {{ facility.fields.price }}</p>
+          <ul class="grid gap-4 border p-4 rounded-md">
+            <li
+              class="flex justify-between items-center"
+              v-for="(space, index) in facility.fields.SpaceTime"
+              :key="space"
+            >
+              <p>{{ space }}</p>
+              <button
+                class="text-blue border border-blue py-2 px-4"
+                @click="setSelectTime(index)"
+                :class="{ 'is-selected': isSelected === index }"
+              >
+                選択
+              </button>
+            </li>
+            <!-- <p class="text-sm">*早朝利用可能期間　4月1日から9月30日</p> -->
+            <p class="text-sm">*薄暮利用可能期間　3月1日から10月31日</p>
+          </ul>
+          <p
+            class="
+              border-b border-blue
+              pb-1
+              justify-self-end
+              mr-2
+              text-lg
+              font-bold
+            "
+            v-if="isSelected !== null"
+          >
+            ￥ {{ facility.fields.SpacePrice[isSelected] }}
+          </p>
         </div>
 
         <div v-if="!isLoggedIn">
@@ -50,7 +80,9 @@
                 year: availableDate.getFullYear(),
                 month: availableDate.getMonth() + 1,
                 date: availableDate.getDate(),
-                price: facility.fields.price,
+                time: facility.fields.SpaceTime[isSelected],
+                price: facility.fields.SpacePrice[isSelected],
+                spaceId: facility.fields.Space[isSelected],
               },
             }"
             >確認画面に進む</Button
@@ -74,6 +106,7 @@ export default {
       availableDate: null,
       selected: false,
       isLoading: false,
+      isSelected: null,
     };
   },
   methods: {
@@ -144,6 +177,9 @@ export default {
       this.showAvailable();
       this.isLoading = false;
     },
+    setSelectTime(index) {
+      this.isSelected = index;
+    },
   },
   computed: {
     isLoggedIn() {
@@ -178,6 +214,12 @@ export default {
         background-color: #555;
       }
     }
+  }
+}
+ul {
+  .is-selected {
+    background-color: #118ab2;
+    color: #fff;
   }
 }
 </style>

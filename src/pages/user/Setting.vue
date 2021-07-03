@@ -160,9 +160,10 @@ export default {
         });
       } catch (err) {
         this.isLoading = false;
+        const message = err.messages || "メールの変更に失敗しました。";
         this.$store.dispatch("showNotification", {
           type: "error",
-          messages: ["メールの変更に失敗しました。"],
+          messages: [message],
         });
       }
     },

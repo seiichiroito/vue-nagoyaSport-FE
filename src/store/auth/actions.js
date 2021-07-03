@@ -138,7 +138,7 @@ export default {
 
     if (!response.ok) {
       const error = new Error(
-        responseData.error.message || "Failed to change email."
+        responseData.error.message || "メールの変更に失敗しました。"
       );
       throw error;
     }

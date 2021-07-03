@@ -28,7 +28,7 @@
                 new Date(res.fields.date).getDate()
               }}日
             </p>
-            <p>￥ {{ res.fields.FacilityPrice[0] }}</p>
+            <p>￥ {{ res.fields.SpacePrice[0] }}</p>
           </template>
         </FacilityCard>
       </div>

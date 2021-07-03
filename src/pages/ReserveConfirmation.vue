@@ -10,6 +10,7 @@
       <div class="mt-8 grid md:grid-cols-2 border p-4 gap-4 rounded-md">
         <p>施設名: {{ name }}</p>
         <p>日時: {{ year }} 年 {{ month }} 月 {{ date }} 日</p>
+        <p>時間帯: {{ time }}</p>
         <p>利用料金: {{ price }}円</p>
         <p>利用者ID*: {{ userId }}</p>
       </div>
@@ -43,6 +44,8 @@ export default {
       date: String,
 
       price: String,
+      time: String,
+      spaceId: String,
       isLoading: false,
     };
   },
@@ -66,6 +69,7 @@ export default {
               date: date,
               userId: this.userId,
               Facility: [this.facilityId],
+              Space: [this.spaceId],
             },
           },
           this.name
@@ -82,12 +86,14 @@ export default {
     },
   },
   created() {
-    const { name, year, month, date, price } = this.$route.query;
+    const { name, year, month, date, price, time, spaceId } = this.$route.query;
     this.name = name;
     this.year = year;
     this.month = month;
     this.date = date;
     this.price = price;
+    this.time = time;
+    this.spaceId = spaceId;
   },
 };
 </script>
