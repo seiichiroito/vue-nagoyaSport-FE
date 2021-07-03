@@ -90,7 +90,6 @@ export default {
         this.isLoading = false;
         this.$router.replace("/");
       } catch (err) {
-        console.log(err.message);
         if (err.message === "INVALID_PASSWORD") {
           this.$store.dispatch("showNotification", {
             type: "error",

@@ -26,7 +26,6 @@ export default {
     },
   },
   mounted() {
-    console.log("HELLO");
     this.setNews();
   },
 };

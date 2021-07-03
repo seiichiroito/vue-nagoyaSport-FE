@@ -1,5 +1,7 @@
 <template>
   <div class="bg-light py-8">
+    <BaseLoading v-if="isLoading" />
+
     <div class="app-container">
       <div>
         <BackButton />
@@ -41,6 +43,7 @@ export default {
       date: String,
 
       price: String,
+      isLoading: false,
     };
   },
   props: {
@@ -55,6 +58,7 @@ export default {
     async makeReservation() {
       const date = `${this.year}-${this.month}-${this.date}`;
       try {
+        this.isLoading = true;
         await addReservation(
           {
             fields: {
@@ -66,12 +70,14 @@ export default {
           },
           this.name
         );
+        this.isLoading = false;
         this.$router.replace("/reserve/completed");
       } catch (err) {
         this.$store.dispatch("showNotification", {
           type: "error",
           messages: [err.message],
         });
+        this.isLoading = false;
       }
     },
   },

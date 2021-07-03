@@ -94,7 +94,6 @@ export const getReservationByUserId = async (userId) => {
       Authorization: "Bearer " + import.meta.env.VITE_AIRTABLE_API_KEY,
     },
   });
-  console.log(res.data.records);
   return res.data.records;
 };
 

@@ -159,6 +159,10 @@ export default {
         this.selected.date = event;
       }
 
+      if (this.selected.date.getTime() < new Date().getTime()) {
+        this.filteredFacilities = null;
+        return;
+      }
       this.filteredFacilities = this.facilities;
       if (this.selected.date !== null) {
         this.filteredFacilities = this.facilities.filter((facility) => {
