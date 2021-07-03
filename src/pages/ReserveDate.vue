@@ -77,16 +77,7 @@
       >
         <FacilityCard
           v-for="facility in filteredFacilities"
-          :to="{
-            path: `/reserve/${facility.id}/confirm`,
-            query: {
-              name: facility.fields.name,
-              year: selected.date.getFullYear(),
-              month: selected.date ? selected.date.getMonth() + 1 : null,
-              date: selected.date ? selected.date.getDate() : null,
-              price: facility.fields.price,
-            },
-          }"
+          @click="checkAuth(facility)"
           :key="facility.id"
           :name="facility.fields.name"
           :imgUrl="facility.fields.photos[0].url"
@@ -235,6 +226,29 @@ export default {
         d1.getMonth() === d2.getMonth() &&
         d1.getDate() === d2.getDate()
       );
+    },
+    checkAuth(facility) {
+      if (!this.isLoggedIn) {
+        this.$store.dispatch("showNotification", {
+          type: "warning",
+          messages: ["予約するにはログインする必要があります。"],
+        });
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+        return;
+      }
+      this.$router.push({
+        path: `/reserve/${facility.id}/confirm`,
+        query: {
+          name: facility.fields.name,
+          year: this.selected.date.getFullYear(),
+          month: this.selected.date ? this.selected.date.getMonth() + 1 : null,
+          date: this.selected.date ? this.selected.date.getDate() : null,
+          price: facility.fields.price,
+        },
+      });
     },
   },
   computed: {

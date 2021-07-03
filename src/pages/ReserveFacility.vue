@@ -52,7 +52,7 @@
       >
         <FacilityCard
           v-for="facility in filteredFacilities"
-          :to="'/reserve/' + facility.id"
+          @click="goFacility(facility)"
           :key="facility.id"
           :name="facility.fields.name"
           :imgUrl="facility.fields.photos[0].url"
@@ -120,6 +120,11 @@ export default {
     };
   },
   methods: {
+    goFacility(facility) {
+      this.$router.push({
+        path: `/reserve/${facility.id}`,
+      });
+    },
     onChange(event) {
       this.filteredFacilities = this.facilities;
 

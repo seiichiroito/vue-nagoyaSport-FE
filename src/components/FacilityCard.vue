@@ -1,5 +1,5 @@
 <template>
-  <RouterLink class="border flex p-4 rounded items-center">
+  <button class="border flex p-4 rounded items-center">
     <img :src="imgUrl" :alt="imgUrl" class="w-16 h-16" />
     <div class="flex-1 ml-4">
       <p>{{ name }}</p>
@@ -15,7 +15,7 @@
         <p>{{ area }}</p>
       </div>
     </div>
-  </RouterLink>
+  </button>
 </template>
 
 <script>

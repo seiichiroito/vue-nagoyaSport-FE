@@ -1,5 +1,7 @@
 <template>
   <div class="flex flex-col min-h-screen">
+    <BaseMoveToTop />
+
     <TheHeader @toggleNav="toggleNav" @closeNav="closeNav" />
     <el-collapse-transition>
       <TheNavbar v-if="navIsOpen" @closeNav="closeNav" />
