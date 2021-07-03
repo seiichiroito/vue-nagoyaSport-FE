@@ -30,7 +30,7 @@
           <p>
             {{ availableDate.getMonth() + 1 }}月 {{ availableDate.getDate() }}日
           </p>
-          <p>￥1500</p>
+          <p>￥ {{ facility.fields.price }}</p>
         </div>
 
         <div v-if="!isLoggedIn">
@@ -50,7 +50,7 @@
                 year: availableDate.getFullYear(),
                 month: availableDate.getMonth() + 1,
                 date: availableDate.getDate(),
-                price: 1500,
+                price: facility.fields.price,
               },
             }"
             >確認画面に進む</Button

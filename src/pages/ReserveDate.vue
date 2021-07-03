@@ -84,7 +84,7 @@
               year: selected.date.getFullYear(),
               month: selected.date ? selected.date.getMonth() + 1 : null,
               date: selected.date ? selected.date.getDate() : null,
-              price: 1500,
+              price: facility.fields.price,
             },
           }"
           :key="facility.id"

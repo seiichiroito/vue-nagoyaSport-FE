@@ -15,7 +15,7 @@
           {{ reservationDate.getMonth() + 1 }} 月
           {{ reservationDate.getDate() }} 日
         </p>
-        <p>利用料金: 1500 円</p>
+        <p>利用料金: {{ reservation.fields.FacilityPrice[0] }} 円</p>
         <p>利用者ID*: {{ reservation.fields.userId }}</p>
       </div>
       <div class="mt-8 flex justify-end">
