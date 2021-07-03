@@ -65,9 +65,7 @@ export default {
     async getReservation() {
       try {
         this.reservation = await getReservationById(this.resId);
-      } catch (err) {
-        console.log(err);
-      }
+      } catch (err) {}
     },
   },
   mounted() {

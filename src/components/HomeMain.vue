@@ -15,7 +15,7 @@
         <FacilityCard
           class="flex-shrink-0"
           v-for="res in reservations"
-          :to="'/inquiry/' + res.id"
+          @click="goInquiry(res.id)"
           :key="res.id"
           :name="res.fields.FacilityName[0]"
           :imgUrl="res.fields.FacilityPhotos[0].url"
@@ -75,6 +75,9 @@ export default {
       this.reservationLoader = ElLoading.service({
         target: document.querySelector("#res"),
       });
+    },
+    goInquiry(resId) {
+      this.$router.push("/inquiry/" + resId);
     },
   },
   mounted() {

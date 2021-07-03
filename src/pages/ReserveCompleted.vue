@@ -8,11 +8,7 @@
           予約の詳細を登録してあるメールアドレスに送信しましたのでご確認ください。
         </p>
         <p class="mt-2">
-          • 予約の確認、変更及びキャンセルは<RouterLink
-            to="/"
-            class="text-blue hover:text-darkBlue"
-            >予約照会</RouterLink
-          >から行うことが出来ます。
+          • 予約の確認、キャンセルはホーム画面から行うことが出来ます。
         </p>
       </div>
       <div class="mt-8 flex justify-center">
