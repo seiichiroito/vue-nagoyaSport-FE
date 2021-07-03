@@ -7,7 +7,9 @@ export default {
     return {
       userId: null,
       token: null,
+      refreshToken: null,
       email: null,
+      isEmailVerified: false,
     };
   },
   getters,

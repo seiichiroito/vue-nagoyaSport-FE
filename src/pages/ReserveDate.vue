@@ -29,7 +29,7 @@
         <DatePicker
           id="date"
           class="col-span-1"
-          @change="setDate"
+          @change="onChange"
           placeholder="検索日"
           :value="selected.date"
         />
@@ -37,7 +37,12 @@
         <label for="sport">スポーツ施設</label>
         <select id="sport" v-model="selected.sport" @change="onChange($event)">
           <option value="">全てのスポーツ施設</option>
-          <option v-for="sport in sports" :key="sport" :value="sport">
+          <option
+            v-for="sport in sports"
+            :key="sport"
+            :value="sport"
+            id="sport"
+          >
             {{ sport }}
           </option>
         </select>
@@ -49,6 +54,7 @@
           class="text-lg absolute top-2.5 left-3"
         />
         <input
+          id="name"
           type="text"
           placeholder="施設名で検査"
           class="w-full py-2 pl-12 rounded"
@@ -59,16 +65,29 @@
       <div
         class="grid gap-8 my-12 sm:grid-cols-2 lg:grid-cols-3"
         id="facilities"
+        v-if="selected.date !== null"
       >
         <FacilityCard
-          v-for="facility in facilities"
-          :to="'/reserve/' + facility.id"
+          v-for="facility in filterdFacilities"
+          :to="{
+            path: `/reserve/${facility.id}/confirm`,
+            query: {
+              name: facility.fields.name,
+              year: selected.date.getFullYear(),
+              month: selected.date ? selected.date.getMonth() + 1 : null,
+              date: selected.date ? selected.date.getDate() : null,
+              price: 1500,
+            },
+          }"
           :key="facility.id"
           :name="facility.fields.name"
           :imgUrl="facility.fields.photos[0].url"
           :type="facility.fields.type"
           :area="facility.fields.area"
         />
+      </div>
+      <div v-else>
+        <p>日時を指定してください。</p>
       </div>
     </div>
   </div>
@@ -127,62 +146,58 @@ export default {
       searchedName: "",
       facilities: [],
       facilityLoader: null,
-      filteredResult: [],
+      filterdFacilities: [],
     };
   },
   methods: {
-    setDate(date) {
+    onChange(event) {
+      if (event.target) {
+        if (!this.selected.date) {
+          return;
+        }
+      } else {
+        this.selected.date = event;
+      }
       this.filterdFacilities = this.facilities;
-
-      this.selected.date = date;
-
       if (this.selected.date !== null) {
-        this.filterdFacilities = this.filterdFacilities.filter((facility) => {
+        this.filterdFacilities = this.facilities.filter((facility) => {
           let isFree = true;
+          facility.fields.reservationDate.map((res) => {
+            const resDate = new Date(res);
 
-          // if (this.selected.date.getTime() <= new Date().getTime()) {
-          //   return false;
-          // }
-          // for (const key in result.reservation) {
-          //   const res = result.reservation[key];
-          //   const reservationDate = new Date(res.year, res.month - 1, res.date);
-          //   if (reservationDate.getTime() === this.selected.date.getTime()) {
-          //     isFree = false;
-          //   }
-          // }
+            if (this.sameDay(this.selected.date, resDate)) {
+              isFree = false;
+            }
+          });
           return isFree;
         });
       }
-    },
-    onChange(event) {
-      this.filteredResult = this.results;
-
+      // Type of Sport
       if (this.selected.sport !== "") {
-        this.filteredResult = this.filteredResult.filter(
-          (result) => result.sports.indexOf(this.selected.sport) > -1
-        );
+        this.filterdFacilities = this.filterdFacilities.filter((facility) => {
+          return facility.fields.type === this.selected.sport;
+        });
       }
 
+      // Search Name
       if (this.searchedName !== "") {
-        this.filteredResult = this.filteredResult.filter((result) =>
-          result.name.includes(this.searchedName)
+        this.filterdFacilities = this.filterdFacilities.filter((facility) =>
+          facility.fields.name.includes(this.searchedName)
         );
       }
     },
     resetForm() {
       this.selected = {
         sport: "",
-        startDate: null,
-        endDate: null,
+        date: null,
       };
       this.filteredFacilities = this.facilities;
     },
     async setFacilities() {
-      this.setLoader();
+      // this.setLoader();
       this.facilities = await getAllFacility();
       this.filterdFacilities = this.facilities;
-      console.log(this.facilities);
-      this.closeLoader();
+      // this.closeLoader();
     },
     closeLoader() {
       this.facilityLoader.close();
@@ -191,6 +206,13 @@ export default {
       this.facilityLoader = ElLoading.service({
         target: document.querySelector("#facilities"),
       });
+    },
+    sameDay(d1, d2) {
+      return (
+        d1.getFullYear() === d2.getFullYear() &&
+        d1.getMonth() === d2.getMonth() &&
+        d1.getDate() === d2.getDate()
+      );
     },
   },
   mounted() {

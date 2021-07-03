@@ -48,7 +48,42 @@
             </form>
           </div>
         </swiper-slide>
-        <swiper-slide> password 変更 </swiper-slide>
+        <swiper-slide>
+          <div class="p-8">
+            <form class="grid" @submit.prevent="submitPassword">
+              <label for="newPassword">新しいパスワード</label>
+              <Input
+                id="newPassword"
+                type="password"
+                :value="formState.newPassword"
+                @input="onInput"
+              />
+              <label for="newPasswordConfirmation"
+                >新しいパスワードの確認</label
+              >
+              <Input
+                id="newPasswordConfirmation"
+                type="password"
+                :value="formState.newPasswordConfirmation"
+                @input="onInput"
+                class="mb-12"
+              />
+              <button
+                class="
+                  bg-blue
+                  text-light
+                  py-2
+                  px-8
+                  rounded-md
+                  hover:bg-darkBlue
+                "
+                type="submit"
+              >
+                変更する
+              </button>
+            </form>
+          </div>
+        </swiper-slide>
         <swiper-slide>
           <div class="flex justify-center items-center h-full">
             <button
@@ -88,9 +123,8 @@ export default {
     return {
       formState: {
         email: "",
-        currentPassword: "",
         newPassword: "",
-        confirmationNewPassword: "",
+        newPasswordConfirmation: "",
       },
       isLoading: false,
     };
@@ -125,12 +159,61 @@ export default {
         });
       } catch (err) {
         this.isLoading = false;
-
         this.$store.dispatch("showNotification", {
           type: "error",
           messages: ["メールの変更に失敗しました。"],
         });
       }
+    },
+    async submitPassword() {
+      if (this.isLoading) {
+        return;
+      }
+      this.clearNotification();
+      let isError = false;
+      const errors = [];
+
+      if (this.formState.newPassword.length < 6) {
+        errors.push("パスワードは6文字以上入力してください。");
+        this.formState.newPassword = "";
+        this.formState.newPasswordConfirmation = "";
+        isError = true;
+      }
+      if (
+        this.formState.newPassword !== this.formState.newPasswordConfirmation
+      ) {
+        errors.push("パスワードが合いません。");
+        this.formState.newPassword = "";
+        this.formState.newPasswordConfirmation = "";
+        isError = true;
+      }
+      if (isError) {
+        this.$store.dispatch("showNotification", {
+          type: "error",
+          messages: errors,
+        });
+        return;
+      }
+      try {
+        this.isLoading = true;
+        await this.$store.dispatch("changePassword", {
+          password: this.formState.newPassword,
+        });
+        this.isLoading = false;
+        this.$store.dispatch("showNotification", {
+          type: "success",
+          messages: ["パスワードの変更に成功しました。"],
+        });
+      } catch (err) {
+        this.isLoading = false;
+        console.log(err);
+        this.$store.dispatch("showNotification", {
+          type: "error",
+          messages: ["パスワードの変更に失敗しました。"],
+        });
+      }
+      this.formState.newPassword = "";
+      this.formState.newPasswordConfirmation = "";
     },
     onInput(event) {
       this.formState = {
@@ -141,6 +224,9 @@ export default {
     logout() {
       this.$store.dispatch("logout");
       this.$router.replace("/login");
+    },
+    clearNotification() {
+      this.$store.dispatch("clearNotification");
     },
   },
   computed: {
