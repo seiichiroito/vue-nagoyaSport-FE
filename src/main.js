@@ -5,6 +5,9 @@ import "./index.css";
 
 const app = createApp(App);
 
+// Firebase
+import "../firebase";
+
 // Font Awesome
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
