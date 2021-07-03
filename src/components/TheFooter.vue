@@ -18,7 +18,9 @@
           >
         </li>
       </ul>
-      <p class="mt-4 text-center">Copyright © Nagoya All rights reserved.</p>
+      <p class="mt-4 text-center">
+        Copyright © Seiichiro Ito All rights reserved.
+      </p>
     </div>
   </footer>
 </template>

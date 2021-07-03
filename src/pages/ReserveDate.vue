@@ -34,6 +34,14 @@
           :value="selected.date"
         />
 
+        <label for="area">地域</label>
+        <select id="area" v-model="selected.area" @change="onChange($event)">
+          <option value="">すべての地域</option>
+          <option v-for="area in areas" :key="area" :value="area">
+            {{ area }}
+          </option>
+        </select>
+
         <label for="sport">スポーツ施設</label>
         <select id="sport" v-model="selected.sport" @change="onChange($event)">
           <option value="">全てのスポーツ施設</option>
@@ -68,7 +76,7 @@
         v-if="selected.date !== null"
       >
         <FacilityCard
-          v-for="facility in filterdFacilities"
+          v-for="facility in filteredFacilities"
           :to="{
             path: `/reserve/${facility.id}/confirm`,
             query: {
@@ -141,27 +149,32 @@ export default {
       ],
       selected: {
         sport: "",
+        area: "",
         date: null,
       },
       searchedName: "",
       facilities: [],
       facilityLoader: null,
-      filterdFacilities: [],
+      filteredFacilities: [],
     };
   },
   methods: {
     onChange(event) {
-      if (event.target) {
+      if (event && event.target) {
         if (!this.selected.date) {
           return;
         }
       } else {
         this.selected.date = event;
       }
-      this.filterdFacilities = this.facilities;
+
+      this.filteredFacilities = this.facilities;
       if (this.selected.date !== null) {
-        this.filterdFacilities = this.facilities.filter((facility) => {
+        this.filteredFacilities = this.facilities.filter((facility) => {
           let isFree = true;
+          if (!facility.fields.reservationDate) {
+            return true;
+          }
           facility.fields.reservationDate.map((res) => {
             const resDate = new Date(res);
 
@@ -172,16 +185,24 @@ export default {
           return isFree;
         });
       }
+
+      // Area
+      if (this.selected.area !== "") {
+        this.filteredFacilities = this.filteredFacilities.filter(
+          (facility) => facility.fields.area === this.selected.area
+        );
+      }
+
       // Type of Sport
       if (this.selected.sport !== "") {
-        this.filterdFacilities = this.filterdFacilities.filter((facility) => {
+        this.filteredFacilities = this.filteredFacilities.filter((facility) => {
           return facility.fields.type === this.selected.sport;
         });
       }
 
       // Search Name
       if (this.searchedName !== "") {
-        this.filterdFacilities = this.filterdFacilities.filter((facility) =>
+        this.filteredFacilities = this.filteredFacilities.filter((facility) =>
           facility.fields.name.includes(this.searchedName)
         );
       }
@@ -189,6 +210,7 @@ export default {
     resetForm() {
       this.selected = {
         sport: "",
+        area: "",
         date: null,
       };
       this.filteredFacilities = this.facilities;
@@ -196,7 +218,7 @@ export default {
     async setFacilities() {
       // this.setLoader();
       this.facilities = await getAllFacility();
-      this.filterdFacilities = this.facilities;
+      this.filteredFacilities = this.facilities;
       // this.closeLoader();
     },
     closeLoader() {
@@ -213,6 +235,11 @@ export default {
         d1.getMonth() === d2.getMonth() &&
         d1.getDate() === d2.getDate()
       );
+    },
+  },
+  computed: {
+    isLoggedIn() {
+      return this.$store.getters.isLoggedIn;
     },
   },
   mounted() {

@@ -22,6 +22,7 @@
                 :value="formState.email"
                 @input="onInput"
               />
+
               <label for="userId">利用者ID</label>
               <Input
                 id="userId"
@@ -231,7 +232,7 @@ export default {
   },
   computed: {
     userId() {
-      return this.$store.getters.userId;
+      return this.$store.getters.userId || "";
     },
     pagination() {
       const tabs = ["プロフィール", "パスワード変更", "ログアウト"];

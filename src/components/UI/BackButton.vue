@@ -9,9 +9,16 @@
 
 <script>
 export default {
+  props: {
+    to: String,
+  },
   methods: {
     backLink() {
-      this.$router.go(-1);
+      if (this.to) {
+        this.$router.push(this.to);
+      } else {
+        this.$router.go(-1);
+      }
     },
   },
 };

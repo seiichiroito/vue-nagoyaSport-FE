@@ -49,6 +49,11 @@ export const router = createRouter({
       component: () => import("./pages/ReserveCompleted.vue"),
     },
     {
+      path: "/inquiry/:resId",
+      component: () => import("./pages/InquiryDetail.vue"),
+      props: true,
+    },
+    {
       path: "/login",
       component: () => import("./pages/auth/Login.vue"),
       meta: { unAuth: true },

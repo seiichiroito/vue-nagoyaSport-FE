@@ -1,5 +1,6 @@
 export default {
   userId(state) {
+    return state.userId;
     if (!state.userId) {
       return state.userId;
     } else {

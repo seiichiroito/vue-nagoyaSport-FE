@@ -43,6 +43,7 @@ export const getAllFacility = async () => {
   });
   return res.data.records;
 };
+
 export const getFacility = async (facilityId) => {
   const url =
     import.meta.env.VITE_AIRTABLE_BASE_URL + "/Facility/" + facilityId;
@@ -69,6 +70,33 @@ export const getAllReservation = async () => {
   });
   return res.data.records;
 };
+export const getReservationById = async (resId) => {
+  const url = import.meta.env.VITE_AIRTABLE_BASE_URL + "/Reservation/" + resId;
+
+  const res = await axios({
+    method: "GET",
+    url,
+    headers: {
+      Authorization: "Bearer " + import.meta.env.VITE_AIRTABLE_API_KEY,
+    },
+  });
+  return res.data;
+};
+
+export const getReservationByUserId = async (userId) => {
+  let url = import.meta.env.VITE_AIRTABLE_BASE_URL + "/Reservation";
+  url += `?filterByFormula=({userId}='${userId}')`;
+
+  const res = await axios({
+    method: "GET",
+    url,
+    headers: {
+      Authorization: "Bearer " + import.meta.env.VITE_AIRTABLE_API_KEY,
+    },
+  });
+  console.log(res.data.records);
+  return res.data.records;
+};
 
 export const getReservation = async (facilityName, date) => {
   let url = import.meta.env.VITE_AIRTABLE_BASE_URL + "/Reservation";
@@ -83,6 +111,19 @@ export const getReservation = async (facilityName, date) => {
     },
   });
   return res.data.records;
+};
+
+export const removeReservation = async (resId) => {
+  const url = import.meta.env.VITE_AIRTABLE_BASE_URL + "/Reservation/" + resId;
+
+  const res = await axios({
+    method: "DELETE",
+    url,
+    headers: {
+      Authorization: "Bearer " + import.meta.env.VITE_AIRTABLE_API_KEY,
+    },
+  });
+  return res.data;
 };
 
 export const addReservation = async (reservation, facilityName) => {

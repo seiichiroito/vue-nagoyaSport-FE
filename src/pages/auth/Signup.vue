@@ -103,7 +103,7 @@ export default {
 
         this.$router.replace(redirectUrl);
       } catch (err) {
-        if (err.message === "EMAIL_EXIST") {
+        if (err.message === "EMAIL_EXISTS") {
           this.$store.dispatch("showNotification", {
             type: "error",
             messages: [
@@ -111,6 +111,8 @@ export default {
             ],
           });
         }
+        this.formState.password = "";
+        this.formState.passwordConfirmation = "";
         this.isLoading = false;
       }
     },
