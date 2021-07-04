@@ -4,11 +4,11 @@
       <li>
         <NavLink to="/" @click="$emit('closeNav')">ホーム</NavLink>
       </li>
-      <li>
+      <!-- <li>
         <NavLink to="/reserve-date" @click="$emit('closeNav')">
           日時から予約
         </NavLink>
-      </li>
+      </li> -->
       <li>
         <NavLink to="/reserve-facility" @click="$emit('closeNav')">
           施設から予約

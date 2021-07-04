@@ -22,9 +22,9 @@
             <RouterLink to="/" class="hover:text-darkBlue"> ホーム </RouterLink>
           </li>
           <li>
-            <RouterLink to="/reserve-date" class="hover:text-darkBlue">
+            <!-- <RouterLink to="/reserve-date" class="hover:text-darkBlue">
               日時から予約
-            </RouterLink>
+            </RouterLink> -->
           </li>
           <li>
             <RouterLink to="/reserve-facility" class="hover:text-darkBlue">
