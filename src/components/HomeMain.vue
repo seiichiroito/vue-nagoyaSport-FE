@@ -23,11 +23,14 @@
           :area="res.fields.FacilityArea[0]"
         >
           <template v-slot:reservation>
-            <p>
-              {{ new Date(res.fields.date).getMonth() + 1 }}月{{
-                new Date(res.fields.date).getDate()
-              }}日
-            </p>
+            <div class="text-left">
+              <p>
+                {{ new Date(res.fields.date).getMonth() + 1 }}月{{
+                  new Date(res.fields.date).getDate()
+                }}日
+              </p>
+              <p>{{ res.fields.SpaceTime[0] }}</p>
+            </div>
             <p>￥ {{ res.fields.SpacePrice[0] }}</p>
           </template>
         </FacilityCard>

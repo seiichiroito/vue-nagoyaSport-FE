@@ -125,13 +125,18 @@ export const removeReservation = async (resId) => {
   return res.data;
 };
 
-export const addReservation = async (reservation, facilityName) => {
+export const addReservation = async (reservation, facilityName, spaceTime) => {
   const url = import.meta.env.VITE_AIRTABLE_BASE_URL + "/Reservation";
 
   const recordRes = await getReservation(facilityName, reservation.fields.date);
-
-  if (recordRes.length > 0) {
-    const error = new Error("その日はすでに予約されています。");
+  let isReserved = false;
+  recordRes.map((res) => {
+    if (res.fields.SpaceTime[0] === spaceTime) {
+      isReserved = true;
+    }
+  });
+  if (isReserved) {
+    const error = new Error("その時間帯はすでに予約されています。");
     throw error;
   }
 

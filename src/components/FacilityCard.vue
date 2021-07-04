@@ -3,7 +3,7 @@
     <img :src="imgUrl" :alt="imgUrl" class="w-16 h-16" />
     <div class="flex-1 ml-4">
       <p>{{ name }}</p>
-      <div class="flex justify-between text-sm">
+      <div class="flex justify-between text-sm mt-2">
         <slot name="reservation"> </slot>
       </div>
       <div class="mt-4 flex justify-between text-sm items-center">

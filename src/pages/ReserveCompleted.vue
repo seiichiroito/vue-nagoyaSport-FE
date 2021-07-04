@@ -2,7 +2,7 @@
   <div class="bg-light py-8">
     <div class="app-container">
       <PageTitle>予約が完了しました</PageTitle>
-      <div class="my-16 px-4">
+      <div class="my-16 px-4 text-center">
         <p>
           •
           予約の詳細を登録してあるメールアドレスに送信しましたのでご確認ください。(未実装)

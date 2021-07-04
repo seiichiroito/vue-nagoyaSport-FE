@@ -11,10 +11,10 @@
         <p class="ml-2">利用不可</p>
 
         <div class="ml-4 bg-lightGray w-4 h-4 rounded-full"></div>
-        <p class="ml-2">予約済み</p>
+        <p class="ml-2">空き無し</p>
 
         <div class="ml-4 bg-blue w-4 h-4 rounded-full"></div>
-        <p class="ml-2">予約可能</p>
+        <p class="ml-2">空き有り</p>
       </div>
       <div ref="calendar">
         <ElCalendar @click="clickDay" v-model="selectedDate">
@@ -38,9 +38,21 @@
             >
               <p>{{ space }}</p>
               <button
+                v-if="checkTime(space)"
+                class="text-light bg-gray py-2 px-2"
+                :class="{
+                  'is-selected': isSelected === index,
+                }"
+              >
+                予約済み
+              </button>
+              <button
+                v-else
                 class="text-blue border border-blue py-2 px-4"
                 @click="setSelectTime(index)"
-                :class="{ 'is-selected': isSelected === index }"
+                :class="{
+                  'is-selected': isSelected === index,
+                }"
               >
                 選択
               </button>
@@ -73,6 +85,7 @@
         </div>
         <div v-else class="mt-8 flex justify-end">
           <Button
+            v-if="isSelected !== null"
             :to="{
               path: `/reserve/${facilityId}/confirm`,
               query: {
@@ -107,11 +120,13 @@ export default {
       selected: false,
       isLoading: false,
       isSelected: null,
+      newDays: null,
     };
   },
   methods: {
     clickDay(el) {
       this.showAvailable();
+      this.isSelected = null;
       if (
         el.target.className.includes("reserved") ||
         el.target.parentElement.className.includes("reserved") ||
@@ -157,17 +172,33 @@ export default {
         }
       });
 
-      if (!this.facility.fields.reservationDate) {
+      if (!this.facility.fields.ReservationDate) {
         return;
       }
-      this.facility.fields.reservationDate.map((res) => {
-        const resDate = new Date(res);
+
+      const newArray = [];
+      this.facility.fields.ReservationDate.map((res, index) => {
+        newArray.push({
+          date: res,
+          time: this.facility.fields.ReservationSpaceTime[index],
+        });
+      });
+      this.newDays = new Array(days.length).fill("");
+
+      newArray.map((res) => {
+        const resDate = new Date(res.date);
 
         if (
           resDate.getFullYear() === displayedYear &&
           resDate.getMonth() + 1 === displayedMonth
         ) {
-          days[resDate.getDate() - 1].classList.add("reserved");
+          this.newDays[resDate.getDate() - 1] += res.time + ",";
+        }
+      });
+      this.newDays.map((newDay, index) => {
+        const test = newDay.split(",").filter((v) => v != "");
+        if (test.length === this.facility.fields.SpaceTime.length) {
+          days[index].classList.add("reserved");
         }
       });
     },
@@ -179,6 +210,17 @@ export default {
     },
     setSelectTime(index) {
       this.isSelected = index;
+    },
+    checkTime(space) {
+      if (this.newDays === null) {
+        return false;
+      }
+      const test = this.newDays[this.availableDate.getDate() - 1]
+        .split(",")
+        .filter((ar) => ar != "")
+        .indexOf(space);
+
+      return test > -1;
     },
   },
   computed: {

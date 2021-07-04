@@ -47,11 +47,13 @@ export default {
       time: String,
       spaceId: String,
       isLoading: false,
+      stripe: null,
     };
   },
   props: {
     facilityId: String,
   },
+
   computed: {
     userId() {
       return this.$store.getters.userId;
@@ -72,7 +74,8 @@ export default {
               Space: [this.spaceId],
             },
           },
-          this.name
+          this.name,
+          this.time
         );
         this.isLoading = false;
         this.$router.replace("/reserve/completed");
@@ -94,6 +97,9 @@ export default {
     this.price = price;
     this.time = time;
     this.spaceId = spaceId;
+  },
+  mounted() {
+    this.stripe = Stripe(import.meta.env.VITE_STRIPE_API_KEY);
   },
 };
 </script>
