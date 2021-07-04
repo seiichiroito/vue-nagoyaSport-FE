@@ -47,7 +47,6 @@ export default {
       time: String,
       spaceId: String,
       isLoading: false,
-      stripe: null,
     };
   },
   props: {
@@ -97,9 +96,6 @@ export default {
     this.price = price;
     this.time = time;
     this.spaceId = spaceId;
-  },
-  mounted() {
-    this.stripe = Stripe(import.meta.env.VITE_STRIPE_API_KEY);
   },
 };
 </script>
